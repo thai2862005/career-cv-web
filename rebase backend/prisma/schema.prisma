@@ -12,3 +12,148 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  roleId    Int
+  role      Role     @relation(fields: [roleId], references: [id])
+  Fullname  String?
+  phone     String?
+  address   String?
+  avatar    String?
+
+  cvs           CV[]
+  applications  JobApplication[]
+}
+model message{
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  content   String
+
+  user      User     @relation(fields: [userId], references: [id])
+
+}
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+
+  users       User[]
+  rolePermissions RolePermission[]
+}
+
+model Permission {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+
+  rolePermissions RolePermission[]
+}
+
+model RolePermission {
+  roleId       Int
+  permissionId Int
+
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
+}
+
+model CV{
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  filename  String
+  fileUrl   String
+  fileSize  Int
+  isDefault Boolean  @default(false)
+
+  user      User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Company{
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  location    String
+  website     String?
+  logoUrl     String?
+
+  jobs JobPost[]
+}
+
+model JobPost{
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  location    String
+  salary      Float?
+  companyId   Int
+
+  company     Company  @relation(fields: [companyId], references: [id])
+  applies     JobApplication[]
+
+  createdAt DateTime @default(now())
+}
+
+model JobApplication{
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  jobPostId Int
+  cvId      Int
+
+  status    ApplyStatus @default(PENDING)
+  appliedAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  jobPost  JobPost  @relation(fields: [jobPostId], references: [id])
+  cv        CV       @relation(fields: [cvId], references: [id])
+}
+model contactUs {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String
+  message   String
+} 
+model Email {
+  id        Int      @id @default(autoincrement())
+  to        String
+  subject   String
+  content   String
+  type      EmailType
+
+  status    EmailStatus @default(PENDING)
+  error     String?
+
+  userId    Int?
+  user      User? @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  sentAt    DateTime?
+}
+enum EmailType {
+  APPLY_JOB
+  VERIFY_EMAIL
+  RESET_PASSWORD
+  SYSTEM
+}
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+enum ApplyStatus {
+  PENDING
+  VIEWED
+  ACCEPTED
+  REJECTED
+}
