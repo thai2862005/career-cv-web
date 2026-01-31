@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -26,14 +26,17 @@ model User {
 
   cvs           CV[]
   applications  JobApplication[]
+  messages       message[] @relation("UserMessages")
+  emails     Email[] @relation("UserEmails")
 }
-model message{
+model message {
   id        Int      @id @default(autoincrement())
   userId    Int
   content   String
 
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation("UserMessages", fields: [userId], references: [id])
 
+  createdAt DateTime @default(now())
 }
 
 model Role {
@@ -63,7 +66,7 @@ model RolePermission {
   @@id([roleId, permissionId])
 }
 
-model CV{
+model CV {
   id        Int      @id @default(autoincrement())
   userId    Int
   title     String
@@ -72,7 +75,8 @@ model CV{
   fileSize  Int
   isDefault Boolean  @default(false)
 
-  user      User     @relation(fields: [userId], references: [id])
+  user             User             @relation(fields: [userId], references: [id])
+  jobApplications  JobApplication[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -103,7 +107,7 @@ model JobPost{
   createdAt DateTime @default(now())
 }
 
-model JobApplication{
+model JobApplication {
   id        Int      @id @default(autoincrement())
   userId    Int
   jobPostId Int
@@ -113,7 +117,7 @@ model JobApplication{
   appliedAt DateTime @default(now())
 
   user      User     @relation(fields: [userId], references: [id])
-  jobPost  JobPost  @relation(fields: [jobPostId], references: [id])
+  jobPost   JobPost  @relation(fields: [jobPostId], references: [id])
   cv        CV       @relation(fields: [cvId], references: [id])
 }
 model contactUs {
@@ -134,7 +138,7 @@ model Email {
   error     String?
 
   userId    Int?
-  user      User? @relation(fields: [userId], references: [id])
+  user      User? @relation("UserEmails", fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   sentAt    DateTime?
