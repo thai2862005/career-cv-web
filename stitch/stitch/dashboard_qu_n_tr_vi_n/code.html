@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Precision Curator | Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "outline-variant": "#94b4de",
+                        "on-primary": "#f8f7ff",
+                        "error": "#9e3f4e",
+                        "on-secondary-fixed": "#3f3f43",
+                        "surface-container-highest": "#d2e4ff",
+                        "inverse-primary": "#6d89fa",
+                        "error-dim": "#4f0116",
+                        "tertiary-fixed": "#e9ddff",
+                        "secondary-dim": "#535356",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#635b77",
+                        "error-container": "#ff8b9a",
+                        "surface": "#f8f9ff",
+                        "on-surface-variant": "#416186",
+                        "on-surface": "#0e3457",
+                        "tertiary-fixed-dim": "#dbcff0",
+                        "surface-tint": "#3755c3",
+                        "primary-fixed": "#dde1ff",
+                        "primary-dim": "#2848b7",
+                        "tertiary-container": "#e9ddff",
+                        "on-tertiary-fixed-variant": "#605773",
+                        "secondary-container": "#e4e1e6",
+                        "outline": "#5d7da4",
+                        "inverse-surface": "#050f1a",
+                        "primary-container": "#dde1ff",
+                        "surface-dim": "#c3dcff",
+                        "on-secondary": "#fbf8fc",
+                        "on-error": "#fff7f7",
+                        "on-tertiary-container": "#564d69",
+                        "primary": "#3755c3",
+                        "on-tertiary-fixed": "#433b55",
+                        "surface-bright": "#f8f9ff",
+                        "secondary-fixed-dim": "#d6d3d8",
+                        "on-secondary-fixed-variant": "#5c5b5f",
+                        "tertiary-dim": "#574f6a",
+                        "surface-container-low": "#eef4ff",
+                        "secondary-fixed": "#e4e1e6",
+                        "on-primary-container": "#2747b6",
+                        "on-secondary-container": "#525155",
+                        "surface-container": "#e5eeff",
+                        "background": "#f8f9ff",
+                        "secondary": "#5f5e62",
+                        "on-background": "#0e3457",
+                        "inverse-on-surface": "#939ead",
+                        "on-tertiary": "#fdf7ff",
+                        "on-primary-fixed": "#0732a3",
+                        "on-error-container": "#782232",
+                        "primary-fixed-dim": "#cad2ff",
+                        "on-primary-fixed-variant": "#3352c0",
+                        "surface-container-high": "#dbe9ff",
+                        "surface-variant": "#d2e4ff"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- Sidebar Navigation -->
+<aside class="bg-surface-container-low h-screen w-64 fixed left-0 top-0 border-r-0 flex flex-col h-full p-4 space-y-2 z-50">
+<div class="mb-8 px-2">
+<h1 class="text-lg font-extrabold text-blue-900 tracking-tighter">Precision HQ</h1>
+<p class="text-xs text-on-surface-variant font-medium opacity-70">Recruitment Suite</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="bg-white text-blue-700 shadow-sm rounded-lg py-2 px-3 border-l-4 border-blue-700 flex items-center gap-3 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-manrope text-sm font-semibold">Dashboard</span>
+</a>
+<a class="text-slate-600 py-2 px-3 hover:bg-slate-200/50 rounded-lg flex items-center gap-3 hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="manage_accounts">manage_accounts</span>
+<span class="font-manrope text-sm font-medium">User Management</span>
+</a>
+<a class="text-slate-600 py-2 px-3 hover:bg-slate-200/50 rounded-lg flex items-center gap-3 hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="work">work</span>
+<span class="font-manrope text-sm font-medium">Job Management</span>
+</a>
+<a class="text-slate-600 py-2 px-3 hover:bg-slate-200/50 rounded-lg flex items-center gap-3 hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+<span class="font-manrope text-sm font-medium">Category Management</span>
+</a>
+<a class="text-slate-600 py-2 px-3 hover:bg-slate-200/50 rounded-lg flex items-center gap-3 hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="report_problem">report_problem</span>
+<span class="font-manrope text-sm font-medium">Violation Reports</span>
+</a>
+<a class="text-slate-600 py-2 px-3 hover:bg-slate-200/50 rounded-lg flex items-center gap-3 hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-manrope text-sm font-medium">System Statistics</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 pt-4 border-t border-outline-variant/10">
+<button class="w-full bg-primary text-on-primary py-2.5 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-transform mb-4">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                Post New Job
+            </button>
+<a class="text-slate-500 text-xs py-2 px-3 hover:text-blue-500 flex items-center gap-3 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                Help Center
+            </a>
+<a class="text-slate-500 text-xs py-2 px-3 hover:text-error flex items-center gap-3 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Log Out
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen relative">
+<!-- Top App Bar -->
+<header class="bg-surface/80 backdrop-blur-md docked full-width top-0 sticky z-40 shadow-sm flex justify-between items-center w-full px-8 py-4">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-blue-800">The Precision Curator</span>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-blue-700 font-semibold border-b-2 border-blue-700 pb-1 text-sm" href="#">Dashboard</a>
+<a class="text-slate-500 hover:text-blue-600 text-sm" href="#">System Audit</a>
+<a class="text-slate-500 hover:text-blue-600 text-sm" href="#">Security Logs</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<input class="bg-surface-container-low border-none rounded-full px-4 py-2 text-sm w-64 focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Global system search..." type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-2 text-slate-400 text-sm" data-icon="search">search</span>
+</div>
+<button class="p-2 text-slate-500 hover:bg-slate-100/50 rounded-full transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100/50 rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="close up headshot of male system administrator with glasses in professional office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxs97pjcE3Lf1XDujS1Oi_0nw_8748OjXVgqPsZTb5Dje9eD8ppGfSqNd7daFOixudwNMHn3tqEGvEmwiO7VO0wMEYC67Ve6GB2EM9RBosGT4C2fqp_6RO8p16jrljb9t9qnlB5-xz5ELU-pw97o9ce5wTRuoPnvmTNISZpng27IXAYlK-uDTIBh8T52PDIfF-qnSn4ARwMQIFlx7zieyGtGFuLs61DeiMzShxP4ka-ZlM08VdvX0PXdDSD3hxFRk4KdTKORWtCGAr"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<div class="p-8 space-y-8">
+<!-- Hero Header -->
+<section class="flex flex-col gap-2">
+<h2 class="text-4xl font-extrabold tracking-tight text-on-surface">System Overview</h2>
+<p class="text-on-surface-variant max-w-2xl">Precision metrics for real-time operations. System status is currently <span class="text-green-600 font-semibold">Optimal</span>.</p>
+</section>
+<!-- Metrics Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<!-- Total Users -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border-l-4 border-primary group hover:translate-y-[-2px] transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="p-2 bg-primary-container text-on-primary-container rounded-lg">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+</span>
+<span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded">+12.4%</span>
+</div>
+<h3 class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Total Users</h3>
+<p class="text-3xl font-extrabold text-on-surface">12,842</p>
+</div>
+<!-- New Jobs -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border-l-4 border-blue-400 group hover:translate-y-[-2px] transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="p-2 bg-surface-container text-blue-700 rounded-lg">
+<span class="material-symbols-outlined" data-icon="work_history">work_history</span>
+</span>
+<span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded">+8.1%</span>
+</div>
+<h3 class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">New Jobs (24h)</h3>
+<p class="text-3xl font-extrabold text-on-surface">148</p>
+</div>
+<!-- Pending Approvals -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border-l-4 border-amber-400 group hover:translate-y-[-2px] transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="p-2 bg-amber-50 text-amber-700 rounded-lg">
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+</span>
+<span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded">Attention</span>
+</div>
+<h3 class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Pending Approvals</h3>
+<p class="text-3xl font-extrabold text-on-surface">32</p>
+</div>
+<!-- Violation Reports -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border-l-4 border-error group hover:translate-y-[-2px] transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="p-2 bg-error-container/20 text-error rounded-lg">
+<span class="material-symbols-outlined" data-icon="flag">flag</span>
+</span>
+<span class="text-xs font-bold text-error bg-error-container/10 px-2 py-1 rounded">Critical</span>
+</div>
+<h3 class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Active Reports</h3>
+<p class="text-3xl font-extrabold text-on-surface">7</p>
+</div>
+</section>
+<!-- Secondary Layout: Activity & Health -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Activity Logs (Editorial List) -->
+<div class="lg:col-span-2 bg-surface-container-lowest rounded-xl p-8 shadow-sm">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h3 class="text-xl font-bold text-on-surface">Global Activity Log</h3>
+<p class="text-sm text-on-surface-variant">Real-time system events</p>
+</div>
+<button class="text-primary font-semibold text-sm hover:underline">Download Audit CSV</button>
+</div>
+<div class="space-y-6">
+<div class="flex items-start gap-4 p-4 hover:bg-surface transition-colors rounded-lg group">
+<div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-blue-600" data-icon="login">login</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-on-surface">Admin Session Initiated</p>
+<p class="text-xs text-on-surface-variant mt-1">User: <span class="font-medium">m.thompson@precision.hq</span> • IP: 192.168.1.104</p>
+</div>
+<span class="text-xs text-slate-400 font-medium">2 mins ago</span>
+</div>
+<div class="flex items-start gap-4 p-4 hover:bg-surface transition-colors rounded-lg">
+<div class="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-amber-600" data-icon="warning">warning</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-on-surface">High-Traffic Warning</p>
+<p class="text-xs text-on-surface-variant mt-1">Job processing queue exceeded threshold (300 requests/sec)</p>
+</div>
+<span class="text-xs text-slate-400 font-medium">14 mins ago</span>
+</div>
+<div class="flex items-start gap-4 p-4 hover:bg-surface transition-colors rounded-lg">
+<div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-green-600" data-icon="cloud_done">cloud_done</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-on-surface">System Backup Successful</p>
+<p class="text-xs text-on-surface-variant mt-1">Primary database snapshot completed on AWS Region: us-east-1</p>
+</div>
+<span class="text-xs text-slate-400 font-medium">1 hour ago</span>
+</div>
+<div class="flex items-start gap-4 p-4 hover:bg-surface transition-colors rounded-lg">
+<div class="w-10 h-10 rounded-full bg-error-container/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-error" data-icon="security">security</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-on-surface">Failed Login Attempt (Blocked)</p>
+<p class="text-xs text-on-surface-variant mt-1">Repeated failed authentication from external node (Berlin, DE)</p>
+</div>
+<span class="text-xs text-slate-400 font-medium">2 hours ago</span>
+</div>
+</div>
+</div>
+<!-- System Health Card (Glassmorphism) -->
+<div class="flex flex-col gap-6">
+<div class="bg-primary p-8 rounded-xl text-on-primary shadow-xl shadow-primary/20 relative overflow-hidden">
+<div class="relative z-10">
+<h3 class="text-lg font-bold mb-1">Server Cluster Health</h3>
+<p class="text-xs opacity-80 mb-6">99.98% Uptime recorded (7 days)</p>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-xs font-semibold mb-1">
+<span>CPU LOAD</span>
+<span>24%</span>
+</div>
+<div class="h-1.5 w-full bg-on-primary/20 rounded-full">
+<div class="h-full bg-on-primary rounded-full" style="width: 24%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-semibold mb-1">
+<span>MEMORY USAGE</span>
+<span>48%</span>
+</div>
+<div class="h-1.5 w-full bg-on-primary/20 rounded-full">
+<div class="h-full bg-on-primary rounded-full" style="width: 48%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-semibold mb-1">
+<span>DATABASE I/O</span>
+<span>12%</span>
+</div>
+<div class="h-1.5 w-full bg-on-primary/20 rounded-full">
+<div class="h-full bg-on-primary rounded-full" style="width: 12%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Decorative glow -->
+<div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/20">
+<div class="flex items-center gap-4 mb-4">
+<div class="h-3 w-3 bg-green-500 rounded-full animate-pulse"></div>
+<h4 class="font-bold text-on-surface text-sm">Active Sessions</h4>
+</div>
+<div class="flex -space-x-2 mb-4">
+<img class="w-8 h-8 rounded-full border-2 border-white object-cover" data-alt="avatar headshot of a team member" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwir1V-pX06t0HitBvGDQdDGjHGGA-Vof6nG8fLshrUfEZu4yPbcRbOQQwDGHTXi9Wr-h6jnghnG3f7TOj0NW9iOF34mXMEflrUHpHF_zyzbOR10n5o2dJm48K3pL1Z5fFVAXtSB0IUL_-W6Z1FTkZ3GcDMu3hXLvQoikC32ap5LeK3WB-Kr2sXMCKewLKl7VHad7Q6zmlrHYaTIh-1twG34huiFCZ3TR545BwS0w2jmwj8qM9axC8QWiIgv6V8trJI42kMlIrwpkI"/>
+<img class="w-8 h-8 rounded-full border-2 border-white object-cover" data-alt="avatar headshot of a team member" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFcEyHPMrmcXfumlFUldfeP0ggrjuNf-kYU6cFEPjYxXupTEVOUV78W2VblSGPr9K5eA3N5XDlAxHfW5FS-sANKoVj2CPFyCbp87Bi763mdFPCexKtGLP5aY7Y0dvn5llvl3kQ8HEecRoBuLMGsMT1WO4u7dgCXs57XuABoRN8QeK6k5F3UL7UJw8k4GCkI5HFeWZB2EzrDAQUE534p2kd7ORNQn2AhFyOi_ZBVrl07nuuqu5BNf9iqNTLupz19p4y-iqnf15IZdWN"/>
+<img class="w-8 h-8 rounded-full border-2 border-white object-cover" data-alt="avatar headshot of a team member" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnYF8RvrLa9klbEyEqI8R94FJrWiUnsWGMxyOLHJpxqc4RkVtjoGbsvw5y9BXMaYYdVeYywMDZvXHff0J_voR2HsG0P34b_Ncth1MgehuTzU77AE6IwHfZCoWR__8HoJQJCoBYyAmE70o63IGu-_R7W8ZbKIj0DYoX8N4OYmqvVhrz87GzBZNQkPd5V_4dj6a0SGOb9GhhvmjOd9U_ly0jU_Qa6z5LHnz-zT-kVrKS9WNlre9LkWOAVtBOYSJux7tTXFx06ABPRp0f"/>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600">+12</div>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">System is being managed by <span class="text-primary font-semibold">4 administrators</span> across 2 regions currently.</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer Shell -->
+<footer class="flex justify-between items-center px-8 py-6 w-full ml-0 bg-surface border-t border-slate-100">
+<span class="font-inter text-xs text-slate-500">© 2024 The Precision Curator. All rights reserved.</span>
+<div class="flex gap-6">
+<a class="font-inter text-xs text-slate-500 hover:text-blue-500 transition-colors" href="#">Privacy Policy</a>
+<a class="font-inter text-xs text-slate-500 hover:text-blue-500 transition-colors" href="#">Terms of Service</a>
+<a class="font-inter text-xs text-slate-500 hover:text-blue-500 transition-colors" href="#">Security</a>
+<a class="font-inter text-xs text-slate-500 hover:text-blue-500 transition-colors" href="#">Contact Support</a>
+</div>
+</footer>
+</main>
+<!-- Floating Action State Indicator (Non-interactive visual element) -->
+<div class="fixed bottom-8 right-8 bg-inverse-surface text-on-primary px-4 py-2 rounded-full text-xs font-semibold shadow-2xl flex items-center gap-2 z-50">
+<span class="w-2 h-2 bg-green-400 rounded-full"></span>
+        Secured Connection: AES-256
+    </div>
+</body></html>

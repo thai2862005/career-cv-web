@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Post New Job | The Precision Curator</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline-variant": "#94b4de",
+              "on-primary": "#f8f7ff",
+              "error": "#9e3f4e",
+              "on-secondary-fixed": "#3f3f43",
+              "surface-container-highest": "#d2e4ff",
+              "inverse-primary": "#6d89fa",
+              "error-dim": "#4f0116",
+              "tertiary-fixed": "#e9ddff",
+              "secondary-dim": "#535356",
+              "surface-container-lowest": "#ffffff",
+              "tertiary": "#635b77",
+              "error-container": "#ff8b9a",
+              "surface": "#f8f9ff",
+              "on-surface-variant": "#416186",
+              "on-surface": "#0e3457",
+              "tertiary-fixed-dim": "#dbcff0",
+              "surface-tint": "#3755c3",
+              "primary-fixed": "#dde1ff",
+              "primary-dim": "#2848b7",
+              "tertiary-container": "#e9ddff",
+              "on-tertiary-fixed-variant": "#605773",
+              "secondary-container": "#e4e1e6",
+              "outline": "#5d7da4",
+              "inverse-surface": "#050f1a",
+              "primary-container": "#dde1ff",
+              "surface-dim": "#c3dcff",
+              "on-secondary": "#fbf8fc",
+              "on-error": "#fff7f7",
+              "on-tertiary-container": "#564d69",
+              "primary": "#3755c3",
+              "on-tertiary-fixed": "#433b55",
+              "surface-bright": "#f8f9ff",
+              "secondary-fixed-dim": "#d6d3d8",
+              "on-secondary-fixed-variant": "#5c5b5f",
+              "tertiary-dim": "#574f6a",
+              "surface-container-low": "#eef4ff",
+              "secondary-fixed": "#e4e1e6",
+              "on-primary-container": "#2747b6",
+              "on-secondary-container": "#525155",
+              "surface-container": "#e5eeff",
+              "background": "#f8f9ff",
+              "secondary": "#5f5e62",
+              "on-background": "#0e3457",
+              "inverse-on-surface": "#939ead",
+              "on-tertiary": "#fdf7ff",
+              "on-primary-fixed": "#0732a3",
+              "on-error-container": "#782232",
+              "primary-fixed-dim": "#cad2ff",
+              "on-primary-fixed-variant": "#3352c0",
+              "surface-container-high": "#dbe9ff",
+              "surface-variant": "#d2e4ff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface/80 backdrop-blur-md font-manrope antialiased tracking-tight shadow-sm sticky top-0 z-50 docked full-width flex justify-between items-center w-full px-6 py-3 max-w-full">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-blue-800 dark:text-blue-300">The Precision Curator</span>
+<nav class="hidden md:flex items-center space-gap-6 gap-6 text-sm">
+<a class="text-slate-500 hover:text-blue-600" href="#">Jobs</a>
+<a class="text-slate-500 hover:text-blue-600" href="#">Talent Pool</a>
+<a class="text-slate-500 hover:text-blue-600" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100/50 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100/50 rounded-full transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden bg-surface-container-high ml-2 border border-outline-variant/20">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="professional headshot of a recruitment manager in a minimalist office setting with soft window lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0UvAEwtEQpM-bFf2Ph6vl9EPrWxslXLqwgruShLwMf-bq51iExHN0DBMslumiSOs1GNhvPnzPltlBoBZZ1P1b0wxs5fS84BbccAVrvMInQ-srWDvFQOxEGFhzEHDecE637991ClHvVubsYyAzRGQ69w0Z9OCIpFG2wZJeUzHn1GzBQQduXtOxS6r8VL0Iv5iM3lFII0j4b1TI4dg2p4KGdImzoWhea0O4S4TC0_Auhj43v7U6mIRUdcmyOOPdX6GNwDj3y-tCJnGf"/>
+</div>
+</div>
+</header>
+<div class="flex">
+<!-- SideNavBar -->
+<aside class="bg-surface-container-low h-screen w-64 fixed left-0 top-0 pt-16 border-r-0 flex flex-col p-4 space-y-2 font-manrope text-sm font-medium z-40 hidden md:flex">
+<div class="mb-8 px-3">
+<h2 class="text-lg font-extrabold text-blue-900 dark:text-blue-200">Precision HQ</h2>
+<p class="text-xs text-slate-500">Recruitment Suite</p>
+</div>
+<div class="space-y-1">
+<a class="text-slate-600 py-2 px-3 hover:bg-slate-200/50 rounded-lg flex items-center gap-3 transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+                </a>
+<a class="bg-white text-blue-700 shadow-sm rounded-lg py-2 px-3 border-l-4 border-blue-700 flex items-center gap-3 transition-all duration-200 active:scale-98" href="#">
+<span class="material-symbols-outlined">work</span> Job Listings
+                </a>
+<a class="text-slate-600 py-2 px-3 hover:bg-slate-200/50 rounded-lg flex items-center gap-3 transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">group</span> Candidates
+                </a>
+<a class="text-slate-600 py-2 px-3 hover:bg-slate-200/50 rounded-lg flex items-center gap-3 transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">event_available</span> Interviews
+                </a>
+<a class="text-slate-600 py-2 px-3 hover:bg-slate-200/50 rounded-lg flex items-center gap-3 transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">account_tree</span> Talent Pipeline
+                </a>
+<a class="text-slate-600 py-2 px-3 hover:bg-slate-200/50 rounded-lg flex items-center gap-3 transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">manage_accounts</span> User Management
+                </a>
+</div>
+<div class="mt-auto pt-6 border-t border-slate-200/50 space-y-1">
+<a class="text-slate-600 py-2 px-3 hover:bg-slate-200/50 rounded-lg flex items-center gap-3 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">help</span> Help Center
+                </a>
+<a class="text-slate-600 py-2 px-3 hover:bg-slate-200/50 rounded-lg flex items-center gap-3 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">logout</span> Log Out
+                </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-8 md:p-12 lg:p-20 bg-surface min-h-screen">
+<!-- Focused Journey Header -->
+<div class="max-w-4xl mx-auto mb-16">
+<div class="flex items-center gap-2 text-primary font-semibold text-sm mb-4">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+<span>Back to Jobs</span>
+</div>
+<h1 class="text-5xl font-extrabold tracking-tight text-on-surface mb-2">Create New Opening</h1>
+<p class="text-on-surface-variant text-lg max-w-xl">Define the future of your team with surgical precision. Our curator AI helps optimize your reach.</p>
+</div>
+<!-- Multi-step Multi-layered Form Layout -->
+<div class="max-w-4xl mx-auto grid grid-cols-1 gap-12">
+<!-- Section 1: Core Identification -->
+<section class="relative">
+<div class="absolute -left-8 top-0 h-full w-1 bg-primary/20 rounded-full"></div>
+<div class="flex flex-col gap-8">
+<div>
+<span class="text-primary font-bold text-xs tracking-widest uppercase mb-2 block">Step 01</span>
+<h2 class="text-2xl font-bold">Core Identification</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-surface-container-low p-8 rounded-xl">
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Job Title</label>
+<input class="bg-surface-container-lowest border border-outline-variant/20 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all outline-none" placeholder="e.g. Principal Product Designer" type="text"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Category</label>
+<select class="bg-surface-container-lowest border border-outline-variant/20 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all outline-none appearance-none">
+<option>Design &amp; Creative</option>
+<option>Engineering</option>
+<option>Marketing</option>
+<option>Product Management</option>
+</select>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Location Type</label>
+<div class="flex gap-2 p-1 bg-surface-container-high rounded-lg">
+<button class="flex-1 py-2 px-3 bg-surface-container-lowest shadow-sm rounded-md text-xs font-bold text-primary">On-site</button>
+<button class="flex-1 py-2 px-3 text-xs font-semibold text-on-surface-variant hover:bg-surface-container-lowest/50 transition-colors">Remote</button>
+<button class="flex-1 py-2 px-3 text-xs font-semibold text-on-surface-variant hover:bg-surface-container-lowest/50 transition-colors">Hybrid</button>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Specific Location</label>
+<input class="bg-surface-container-lowest border border-outline-variant/20 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all outline-none" placeholder="London, United Kingdom" type="text"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: Financials & Engagement -->
+<section class="relative">
+<div class="absolute -left-8 top-0 h-full w-1 bg-primary/20 rounded-full"></div>
+<div class="flex flex-col gap-8">
+<div>
+<span class="text-primary font-bold text-xs tracking-widest uppercase mb-2 block">Step 02</span>
+<h2 class="text-2xl font-bold">Financials &amp; Logistics</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-surface-container-lowest p-8 rounded-xl shadow-[0px_4px_24px_rgba(14,52,87,0.06)]">
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Salary Range (Annual)</label>
+<div class="flex items-center gap-2">
+<input class="w-full bg-surface border border-outline-variant/20 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all outline-none" placeholder="Min" type="text"/>
+<span class="text-outline-variant">to</span>
+<input class="w-full bg-surface border border-outline-variant/20 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all outline-none" placeholder="Max" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Currency</label>
+<select class="bg-surface border border-outline-variant/20 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all outline-none">
+<option>USD ($)</option>
+<option>GBP (£)</option>
+<option>EUR (€)</option>
+</select>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: The Narrative -->
+<section class="relative">
+<div class="absolute -left-8 top-0 h-full w-1 bg-primary/20 rounded-full"></div>
+<div class="flex flex-col gap-8">
+<div>
+<span class="text-primary font-bold text-xs tracking-widest uppercase mb-2 block">Step 03</span>
+<h2 class="text-2xl font-bold">The Narrative</h2>
+</div>
+<div class="flex flex-col gap-8 bg-surface-container-low p-8 rounded-xl">
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Full Description</label>
+<textarea class="bg-surface-container-lowest border border-outline-variant/20 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all outline-none resize-none" placeholder="Tell the story of the role, the team, and the mission..." rows="8"></textarea>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Key Requirements (Bullet points)</label>
+<textarea class="bg-surface-container-lowest border border-outline-variant/20 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all outline-none resize-none" placeholder="List the essential skills and experiences..." rows="4"></textarea>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 4: Contact & Internal -->
+<section class="relative">
+<div class="absolute -left-8 top-0 h-full w-1 bg-primary/20 rounded-full"></div>
+<div class="flex flex-col gap-8">
+<div>
+<span class="text-primary font-bold text-xs tracking-widest uppercase mb-2 block">Step 04</span>
+<h2 class="text-2xl font-bold">Contact &amp; Internal</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-surface-container-lowest p-8 rounded-xl shadow-[0px_4px_24px_rgba(14,52,87,0.06)]">
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Hiring Manager</label>
+<input class="bg-surface border border-outline-variant/20 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all outline-none" placeholder="Full Name" type="text"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Contact Email</label>
+<input class="bg-surface border border-outline-variant/20 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all outline-none" placeholder="hiring@company.com" type="email"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Final Actions -->
+<div class="flex flex-col md:flex-row items-center justify-between pt-12 border-t border-slate-200/50 gap-6">
+<div class="flex items-center gap-4 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary">info</span>
+<p class="text-sm">Draft auto-saved 2 minutes ago</p>
+</div>
+<div class="flex items-center gap-4 w-full md:w-auto">
+<button class="flex-1 md:flex-none px-8 py-3 font-semibold text-primary hover:bg-primary-container/20 transition-colors rounded-md active:scale-95">Save as Draft</button>
+<button class="flex-1 md:flex-none px-12 py-3 bg-gradient-to-br from-primary to-on-primary-fixed-variant text-on-primary font-bold rounded-md shadow-lg active:scale-95 transition-all">Publish Opening</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface w-full border-t border-slate-100 flex justify-between items-center px-8 py-6 ml-0 md:ml-64 font-inter text-xs text-slate-500">
+<div class="flex gap-6">
+<a class="hover:text-blue-500 transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-blue-500 transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-blue-500 transition-colors" href="#">Security</a>
+<a class="hover:text-blue-500 transition-colors" href="#">Contact Support</a>
+</div>
+<p>© 2024 The Precision Curator. All rights reserved.</p>
+</footer>
+</body></html>

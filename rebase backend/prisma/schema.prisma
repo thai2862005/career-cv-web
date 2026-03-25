@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,27 +11,52 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  roleId    Int
-  role      Role     @relation(fields: [roleId], references: [id])
-  Fullname  String?
-  phone     String?
-  address   String?
-  avatar    String?
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  password      String
+  roleId        Int
+  role          Role     @relation(fields: [roleId], references: [id])
+  Fullname      String?
+  phone         String?
+  address       String?
+  avatar        String?
+  isActive      Boolean  @default(true)
+  emailVerified Boolean  @default(false)
 
-  cvs           CV[]
-  applications  JobApplication[]
-  messages       message[] @relation("UserMessages")
-  emails     Email[] @relation("UserEmails")
+  cvs              CV[]
+  applications     JobApplication[]
+  messages         Message[]        @relation("UserMessages")
+  emails           Email[]          @relation("UserEmails")
+  savedJobs        SavedJob[]
+  companyReviews   CompanyReview[]
+  notifications    Notification[]
+  company          Company?         @relation("CompanyHR")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
-model message {
+
+model Message {
   id        Int      @id @default(autoincrement())
   userId    Int
-  content   String
+  content   String   @db.Text
+  isRead    Boolean  @default(false)
 
   user      User     @relation("UserMessages", fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  content   String   @db.Text
+  type      NotificationType
+  isRead    Boolean  @default(false)
+  link      String?
+
+  user      User     @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
 }
@@ -44,7 +66,7 @@ model Role {
   name        String   @unique
   description String?
 
-  users       User[]
+  users           User[]
   rolePermissions RolePermission[]
 }
 
@@ -82,56 +104,129 @@ model CV {
   updatedAt DateTime @updatedAt
 }
 
-model Company{
+model Category {
   id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  location    String
-  website     String?
-  logoUrl     String?
+  name        String   @unique
+  description String?
+  icon        String?
+  isActive    Boolean  @default(true)
 
-  jobs JobPost[]
-}
-
-model JobPost{
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  location    String
-  salary      Float?
-  companyId   Int
-
-  company     Company  @relation(fields: [companyId], references: [id])
-  applies     JobApplication[]
+  jobs        JobPost[]
 
   createdAt DateTime @default(now())
 }
 
-model JobApplication {
+model Company {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String   @db.Text
+  location    String
+  website     String?
+  logoUrl     String?
+  coverImage  String?
+  size        String?
+  industry    String?
+  isVerified  Boolean  @default(false)
+  hrUserId    Int?     @unique
+
+  hrUser      User?    @relation("CompanyHR", fields: [hrUserId], references: [id])
+  jobs        JobPost[]
+  reviews     CompanyReview[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CompanyReview {
+  id        Int      @id @default(autoincrement())
+  companyId Int
+  userId    Int
+  rating    Int
+  title     String
+  content   String   @db.Text
+  pros      String?  @db.Text
+  cons      String?  @db.Text
+  isAnonymous Boolean @default(false)
+
+  company   Company  @relation(fields: [companyId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model JobPost {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @db.Text
+  requirements String? @db.Text
+  benefits    String?  @db.Text
+  location    String
+  salary      Float?
+  salaryMax   Float?
+  jobType     JobType  @default(FULL_TIME)
+  experience  String?
+  companyId   Int
+  categoryId  Int?
+  isActive    Boolean  @default(true)
+  isApproved  Boolean  @default(false)
+  viewCount   Int      @default(0)
+  deadline    DateTime?
+
+  company     Company  @relation(fields: [companyId], references: [id])
+  category    Category? @relation(fields: [categoryId], references: [id])
+  applies     JobApplication[]
+  savedBy     SavedJob[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SavedJob {
   id        Int      @id @default(autoincrement())
   userId    Int
   jobPostId Int
-  cvId      Int
-
-  status    ApplyStatus @default(PENDING)
-  appliedAt DateTime @default(now())
 
   user      User     @relation(fields: [userId], references: [id])
   jobPost   JobPost  @relation(fields: [jobPostId], references: [id])
-  cv        CV       @relation(fields: [cvId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, jobPostId])
 }
-model contactUs {
+
+model JobApplication {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  jobPostId   Int
+  cvId        Int
+  coverLetter String?  @db.Text
+  note        String?  @db.Text
+
+  status      ApplyStatus @default(PENDING)
+  appliedAt   DateTime @default(now())
+  reviewedAt  DateTime?
+
+  user        User     @relation(fields: [userId], references: [id])
+  jobPost     JobPost  @relation(fields: [jobPostId], references: [id])
+  cv          CV       @relation(fields: [cvId], references: [id])
+}
+
+model ContactUs {
   id        Int      @id @default(autoincrement())
   name      String
   email     String
   subject   String
-  message   String
-} 
+  message   String   @db.Text
+  isResolved Boolean @default(false)
+
+  createdAt DateTime @default(now())
+}
+
 model Email {
   id        Int      @id @default(autoincrement())
   to        String
   subject   String
-  content   String
+  content   String   @db.Text
   type      EmailType
 
   status    EmailStatus @default(PENDING)
@@ -143,12 +238,31 @@ model Email {
   createdAt DateTime @default(now())
   sentAt    DateTime?
 }
+
+// Enums
+enum NotificationType {
+  APPLICATION_STATUS
+  NEW_JOB
+  SYSTEM
+  MESSAGE
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  REMOTE
+}
+
 enum EmailType {
   APPLY_JOB
   VERIFY_EMAIL
   RESET_PASSWORD
   SYSTEM
+  INVITATION
 }
+
 enum EmailStatus {
   PENDING
   SENT
