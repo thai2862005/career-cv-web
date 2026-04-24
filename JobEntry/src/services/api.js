@@ -118,6 +118,15 @@ export const jobAPI = {
 
   rejectJob: (jobId, reason, token) =>
     apiRequest(`/admin/jobs/${jobId}/reject`, { method: 'PUT', body: { reason }, token }),
+
+  getAllJobsAdmin: (token) =>
+    apiRequest('/admin/jobs', { token }),
+
+  deleteJobAdmin: (jobId, token) =>
+    apiRequest(`/admin/jobs/${jobId}`, { method: 'DELETE', token }),
+
+  updateJobAdmin: (jobId, jobData, token) =>
+    apiRequest(`/admin/jobs/${jobId}`, { method: 'PUT', body: jobData, token }),
 };
 
 // ============================================
