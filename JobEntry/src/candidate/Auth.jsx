@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Briefcase, Loader, AlertCircle } from 'lucide-react';
 import { Input, Badge } from '../components/Forms';
 import { Button } from '../components/Button';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, ROLES } from '../context/AuthContext';
 
 export const Auth = () => {
   const location = useLocation();
@@ -11,7 +11,7 @@ export const Auth = () => {
   const { login, register, loading } = useAuth();
   
   const [isLogin, setIsLogin] = useState(location.pathname === '/login');
-  const [role, setRole] = useState('JOB_SEEKER');
+  const [role, setRole] = useState(''); // Start empty - make role required
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -29,8 +29,7 @@ export const Auth = () => {
         if (result.success) {
           // Navigate based on role
           const user = result.data.user;
-          const extractedRole = user?.role || user?.Role || user?.roleName || '';
-          const userRole = String(extractedRole).toUpperCase();
+          const userRole = String(user?.role || user?.Role || user?.roleName || 'JOB_SEEKER').toUpperCase();
           if (userRole === 'HR') navigate('/hr/dashboard');
           else if (userRole === 'ADMIN') navigate('/admin/dashboard');
           else navigate('/candidate/dashboard');
@@ -38,17 +37,22 @@ export const Auth = () => {
           setError(result.error || 'Login failed');
         }
       } else {
-        // Register
+        // Register - Validate role is selected
+        if (!role) {
+          setError('Please select a role to continue');
+          return;
+        }
+
         const result = await register({
-  email,
-  password,
-  Fullname: `${firstName} ${lastName}`,
-  role: role || 'JOB_SEEKER',
-});
+          email,
+          password,
+          Fullname: `${firstName} ${lastName}`,
+          role: role, // Send role string
+        });
+        
         if (result.success) {
           const user = result.data.user;
-          const extractedRole = user?.role || user?.Role || user?.roleName || role || 'JOB_SEEKER';
-          const userRole = String(extractedRole).toUpperCase();
+          const userRole = String(user?.role || user?.Role || user?.roleName || 'JOB_SEEKER').toUpperCase();
           if (userRole === 'HR') navigate('/hr/dashboard');
           else if (userRole === 'ADMIN') navigate('/admin/dashboard');
           else navigate('/candidate/dashboard');
@@ -149,17 +153,32 @@ export const Auth = () => {
             />
 
             {!isLogin && (
-              <div className="flex flex-col space-y-1">
-                <label className="text-sm font-medium text-slate-700">Choose Your Role</label>
+              <div className="flex flex-col space-y-2">
+                <label className="text-sm font-medium text-slate-700">
+                  Choose Your Role <span className="text-red-500">*</span>
+                </label>
                 <select 
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
                   className="px-4 py-2 border border-slate-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] text-slate-800"
+                  required
                 >
-                  <option value="JOB_SEEKER">Job Seeker</option>
-                  <option value="HR">HR / Recruiter</option>
-                  <option value="ADMIN">Admin</option>
+                  <option value="">-- Select a Role --</option>
+                  <option value={ROLES.JOB_SEEKER.name}>
+                    {ROLES.JOB_SEEKER.display} (Role ID: {ROLES.JOB_SEEKER.id})
+                  </option>
+                  <option value={ROLES.HR.name}>
+                    {ROLES.HR.display} (Role ID: {ROLES.HR.id})
+                  </option>
+                  <option value={ROLES.ADMIN.name}>
+                    {ROLES.ADMIN.display} (Role ID: {ROLES.ADMIN.id})
+                  </option>
                 </select>
+                {role && (
+                  <p className="text-xs text-slate-500">
+                    Selected: {ROLES[role]?.display} • Role ID: {ROLES[role]?.id}
+                  </p>
+                )}
               </div>
             )}
 

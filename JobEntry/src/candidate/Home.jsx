@@ -1,17 +1,28 @@
-import React, { useState } from 'react';
-import { Search, MapPin, Code, Palette, Megaphone, Database, Briefcase, ChevronRight, Loader } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, MapPin, Code, Palette, Megaphone, Database, Briefcase, ChevronRight, Loader, User, LogOut } from 'lucide-react';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Link, useNavigate } from 'react-router-dom';
 import { useJobs } from '../hooks/useJobs';
 import { useCompanies } from '../hooks/useCompanies';
+import { useAuth } from '../context/AuthContext';
 
 export const Home = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout, getUserInfo } = useAuth();
   const { jobs, loading: jobsLoading } = useJobs();
   const { companies, loading: companiesLoading } = useCompanies();
   const [searchQuery, setSearchQuery] = useState('');
   const [locationQuery, setLocationQuery] = useState('');
+  const [storedUserInfo, setStoredUserInfo] = useState(null);
+
+  // Load user info from localStorage as fallback
+  useEffect(() => {
+    if (isAuthenticated) {
+      const info = getUserInfo();
+      setStoredUserInfo(info);
+    }
+  }, [isAuthenticated, getUserInfo]);
 
   const categories = [
     { name: 'Engineering', icon: <Code className="h-6 w-6" />, count: 320 },
@@ -20,14 +31,57 @@ export const Home = () => {
     { name: 'Data Science', icon: <Database className="h-6 w-6" />, count: 124 },
   ];
 
-  // Get featured jobs (first 4)
-
-  // Get top companies (first 6)
+  // Get featured jobs (first 4) and top companies (first 6)
   const featuredJobs = Array.isArray(jobs) ? jobs.slice(0, 4) : [];
-const topCompanies = Array.isArray(companies) ? companies.slice(0, 6).map(c => c.name) : [];
+  const topCompanies = Array.isArray(companies) ? companies.slice(0, 6).map(c => c.name) : [];
+
+  // Use user from context or fallback to localStorage
+  const displayUser = user || storedUserInfo;
+  const displayName = displayUser?.Fullname || displayUser?.fullname || displayUser?.email || 'User';
+  const roleDisplay = displayUser?.roleDisplay || displayUser?.role || 'Job Seeker';
+  const roleId = displayUser?.roleId || 1;
 
   return (
     <div className="flex flex-col">
+      {/* User Info Bar - Show when authenticated or user data exists */}
+      {(isAuthenticated || displayUser) && (
+        <div className="bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white px-4 sm:px-6 lg:px-8 py-4 shadow-lg">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="p-2 rounded-lg bg-white/20 backdrop-blur-md">
+                <User className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-sm text-blue-100">Welcome back,</p>
+                <h3 className="text-lg font-semibold">{displayName}</h3>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="text-sm">
+                <p className="text-blue-100">Your Role</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-sm font-medium">
+                    {roleDisplay}
+                  </span>
+                  <span className="text-xs text-blue-100">(ID: {roleId})</span>
+                </div>
+              </div>
+              <Button 
+                size="sm"
+                onClick={() => {
+                  logout();
+                  navigate('/');
+                }}
+                className="flex items-center gap-2 justify-center w-full sm:w-auto bg-white/20 hover:bg-white/30 text-white border border-white/30 focus:ring-white"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <section className="relative bg-slate-900 pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
