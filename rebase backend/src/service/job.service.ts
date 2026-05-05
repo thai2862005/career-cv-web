@@ -1,8 +1,15 @@
-import { prisma } from '../config/client';
-import { CreateJobPostInput, UpdateJobPostInput, SearchJobInput } from '../validation/job';
+import { prisma } from "../config/client";
+import {
+  CreateJobPostInput,
+  UpdateJobPostInput,
+  SearchJobInput,
+} from "../validation/job";
 
 // Create job post
-export const createJobPost = async (companyId: number, data: CreateJobPostInput) => {
+export const createJobPost = async (
+  companyId: number,
+  data: CreateJobPostInput,
+) => {
   const jobPost = await prisma.jobPost.create({
     data: {
       title: data.title,
@@ -12,7 +19,7 @@ export const createJobPost = async (companyId: number, data: CreateJobPostInput)
       location: data.location,
       salary: data.salary || null,
       salaryMax: data.salaryMax || null,
-      jobType: data.jobType || 'FULL_TIME',
+      jobType: data.jobType || "FULL_TIME",
       experience: data.experience || null,
       deadline: data.deadline ? new Date(data.deadline) : null,
       company: {
@@ -35,7 +42,16 @@ export const createJobPost = async (companyId: number, data: CreateJobPostInput)
 
 // Get all job posts (public)
 export const getAllJobPosts = async (filters: SearchJobInput) => {
-  const { keyword, location, categoryId, jobType, salaryMin, salaryMax, page, limit } = filters;
+  const {
+    keyword,
+    location,
+    categoryId,
+    jobType,
+    salaryMin,
+    salaryMax,
+    page,
+    limit,
+  } = filters;
   const skip = (page - 1) * limit;
 
   const where: any = {
@@ -85,7 +101,7 @@ export const getAllJobPosts = async (filters: SearchJobInput) => {
           select: { applies: true, savedBy: true },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     }),
     prisma.jobPost.count({ where }),
   ]);
@@ -115,7 +131,7 @@ export const getJobPostById = async (jobId: number) => {
   });
 
   if (!job) {
-    throw new Error('Không tìm thấy tin tuyển dụng');
+    throw new Error("Không tìm thấy tin tuyển dụng");
   }
 
   // Increment view count
@@ -128,13 +144,17 @@ export const getJobPostById = async (jobId: number) => {
 };
 
 // Update job post
-export const updateJobPost = async (jobId: number, companyId: number, data: UpdateJobPostInput) => {
+export const updateJobPost = async (
+  jobId: number,
+  companyId: number,
+  data: UpdateJobPostInput,
+) => {
   const job = await prisma.jobPost.findFirst({
     where: { id: jobId, companyId },
   });
 
   if (!job) {
-    throw new Error('Không tìm thấy tin tuyển dụng hoặc bạn không có quyền');
+    throw new Error("Không tìm thấy tin tuyển dụng hoặc bạn không có quyền");
   }
 
   const updatedJob = await prisma.jobPost.update({
@@ -159,14 +179,14 @@ export const deleteJobPost = async (jobId: number, companyId: number) => {
   });
 
   if (!job) {
-    throw new Error('Không tìm thấy tin tuyển dụng hoặc bạn không có quyền');
+    throw new Error("Không tìm thấy tin tuyển dụng hoặc bạn không có quyền");
   }
 
   await prisma.jobPost.delete({
     where: { id: jobId },
   });
 
-  return { message: 'Xóa tin tuyển dụng thành công' };
+  return { message: "Xóa tin tuyển dụng thành công" };
 };
 
 // Toggle job active status
@@ -176,7 +196,7 @@ export const toggleJobStatus = async (jobId: number, companyId: number) => {
   });
 
   if (!job) {
-    throw new Error('Không tìm thấy tin tuyển dụng');
+    throw new Error("Không tìm thấy tin tuyển dụng");
   }
 
   const updatedJob = await prisma.jobPost.update({
@@ -188,7 +208,11 @@ export const toggleJobStatus = async (jobId: number, companyId: number) => {
 };
 
 // Get company jobs (HR)
-export const getCompanyJobs = async (companyId: number, page: number = 1, limit: number = 10) => {
+export const getCompanyJobs = async (
+  companyId: number,
+  page: number = 1,
+  limit: number = 10,
+) => {
   const skip = (page - 1) * limit;
 
   const [jobs, total] = await Promise.all([
@@ -202,7 +226,7 @@ export const getCompanyJobs = async (companyId: number, page: number = 1, limit:
           select: { applies: true },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     }),
     prisma.jobPost.count({ where: { companyId } }),
   ]);
@@ -244,7 +268,7 @@ export const getPendingJobs = async (page: number = 1, limit: number = 10) => {
         company: true,
         category: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     }),
     prisma.jobPost.count({ where: { isApproved: false } }),
   ]);
@@ -260,6 +284,60 @@ export const getPendingJobs = async (page: number = 1, limit: number = 10) => {
   };
 };
 
+// Get all jobs (Admin)
+export const getAllJobsAdmin = async (page: number = 1, limit: number = 20) => {
+  const skip = (page - 1) * limit;
+
+  const [jobs, total] = await Promise.all([
+    prisma.jobPost.findMany({
+      skip,
+      take: limit,
+      include: {
+        company: true,
+        category: true,
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.jobPost.count(),
+  ]);
+
+  return {
+    jobs,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
+// Update job post (Admin)
+export const updateJobPostAdmin = async (
+  jobId: number,
+  data: UpdateJobPostInput,
+) => {
+  const job = await prisma.jobPost.update({
+    where: { id: jobId },
+    data,
+    include: {
+      company: true,
+      category: true,
+    },
+  });
+
+  return job;
+};
+
+// Delete job post (Admin)
+export const deleteJobPostAdmin = async (jobId: number) => {
+  await prisma.jobPost.delete({
+    where: { id: jobId },
+  });
+
+  return { message: "Xóa tin tuyển dụng thành công" };
+};
+
 // Save job
 export const saveJob = async (userId: number, jobPostId: number) => {
   const existingSave = await prisma.savedJob.findUnique({
@@ -269,7 +347,7 @@ export const saveJob = async (userId: number, jobPostId: number) => {
   });
 
   if (existingSave) {
-    throw new Error('Đã lưu tin này');
+    throw new Error("Đã lưu tin này");
   }
 
   const savedJob = await prisma.savedJob.create({
@@ -297,7 +375,7 @@ export const unsaveJob = async (userId: number, jobPostId: number) => {
   });
 
   if (!savedJob) {
-    throw new Error('Chưa lưu tin này');
+    throw new Error("Chưa lưu tin này");
   }
 
   await prisma.savedJob.delete({
@@ -306,11 +384,15 @@ export const unsaveJob = async (userId: number, jobPostId: number) => {
     },
   });
 
-  return { message: 'Bỏ lưu thành công' };
+  return { message: "Bỏ lưu thành công" };
 };
 
 // Get saved jobs
-export const getSavedJobs = async (userId: number, page: number = 1, limit: number = 10) => {
+export const getSavedJobs = async (
+  userId: number,
+  page: number = 1,
+  limit: number = 10,
+) => {
   const skip = (page - 1) * limit;
 
   const [savedJobs, total] = await Promise.all([
@@ -328,7 +410,7 @@ export const getSavedJobs = async (userId: number, page: number = 1, limit: numb
           },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     }),
     prisma.savedJob.count({ where: { userId } }),
   ]);

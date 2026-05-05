@@ -1,13 +1,36 @@
-import bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
-import { prisma } from '../config/client';
-import { authConfig, ROLES } from '../config/auth';
-import { RegisterInput, LoginInput } from '../validation/auth';
-import { JwtPayload } from '../type';
+import bcrypt from "bcrypt";
+import * as jwt from "jsonwebtoken";
+import { prisma } from "../config/client";
+import { authConfig } from "../config/auth";
+import { RegisterInput, LoginInput } from "../validation/auth";
+import { JwtPayload } from "../type";
 
 // Register new user
 export const registerUser = async (data: RegisterInput) => {
-  const { email, password, Fullname, phone, address, roleId } = data;
+  const { email, password, Fullname, phone, address, roleId, role } = data;
+
+  let resolvedRoleId = roleId;
+  if (!resolvedRoleId && role) {
+    const roleByName = await prisma.role.findUnique({
+      where: { name: role },
+      select: { id: true },
+    });
+    if (!roleByName) {
+      throw new Error(`Không tìm thấy role ${role}`);
+    }
+    resolvedRoleId = roleByName.id;
+  }
+
+  if (!resolvedRoleId) {
+    const jobSeekerRole = await prisma.role.findUnique({
+      where: { name: "JOB_SEEKER" },
+      select: { id: true },
+    });
+    if (!jobSeekerRole) {
+      throw new Error("Không tìm thấy role mặc định JOB_SEEKER");
+    }
+    resolvedRoleId = jobSeekerRole.id;
+  }
 
   // Check if email exists
   const existingUser = await prisma.user.findUnique({
@@ -15,11 +38,14 @@ export const registerUser = async (data: RegisterInput) => {
   });
 
   if (existingUser) {
-    throw new Error('Email đã được sử dụng');
+    throw new Error("Email đã được sử dụng");
   }
 
   // Hash password
-  const hashedPassword = await bcrypt.hash(password, authConfig.bcryptSaltRounds);
+  const hashedPassword = await bcrypt.hash(
+    password,
+    authConfig.bcryptSaltRounds,
+  );
 
   // Create user
   const user = await prisma.user.create({
@@ -29,7 +55,7 @@ export const registerUser = async (data: RegisterInput) => {
       Fullname,
       phone,
       address,
-      roleId: roleId || ROLES.JOB_SEEKER,
+      roleId: resolvedRoleId,
     },
     include: {
       role: true,
@@ -66,17 +92,17 @@ export const loginUser = async (data: LoginInput) => {
   });
 
   if (!user) {
-    throw new Error('Email hoặc mật khẩu không đúng');
+    throw new Error("Email hoặc mật khẩu không đúng");
   }
 
   if (!user.isActive) {
-    throw new Error('Tài khoản đã bị khóa');
+    throw new Error("Tài khoản đã bị khóa");
   }
 
   // Verify password
   const isValidPassword = await bcrypt.compare(password, user.password);
   if (!isValidPassword) {
-    throw new Error('Email hoặc mật khẩu không đúng');
+    throw new Error("Email hoặc mật khẩu không đúng");
   }
 
   // Generate token
@@ -109,7 +135,7 @@ export const getUserProfile = async (userId: number) => {
   });
 
   if (!user) {
-    throw new Error('Không tìm thấy người dùng');
+    throw new Error("Không tìm thấy người dùng");
   }
 
   const { password, ...userWithoutPassword } = user;
@@ -117,12 +143,15 @@ export const getUserProfile = async (userId: number) => {
 };
 
 // Update profile
-export const updateUserProfile = async (userId: number, data: Partial<{
-  Fullname: string;
-  phone: string;
-  address: string;
-  avatar: string;
-}>) => {
+export const updateUserProfile = async (
+  userId: number,
+  data: Partial<{
+    Fullname: string;
+    phone: string;
+    address: string;
+    avatar: string;
+  }>,
+) => {
   const user = await prisma.user.update({
     where: { id: userId },
     data,
@@ -136,32 +165,44 @@ export const updateUserProfile = async (userId: number, data: Partial<{
 };
 
 // Change password
-export const changePassword = async (userId: number, currentPassword: string, newPassword: string) => {
+export const changePassword = async (
+  userId: number,
+  currentPassword: string,
+  newPassword: string,
+) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
   });
 
   if (!user) {
-    throw new Error('Không tìm thấy người dùng');
+    throw new Error("Không tìm thấy người dùng");
   }
 
   const isValidPassword = await bcrypt.compare(currentPassword, user.password);
   if (!isValidPassword) {
-    throw new Error('Mật khẩu hiện tại không đúng');
+    throw new Error("Mật khẩu hiện tại không đúng");
   }
 
-  const hashedPassword = await bcrypt.hash(newPassword, authConfig.bcryptSaltRounds);
+  const hashedPassword = await bcrypt.hash(
+    newPassword,
+    authConfig.bcryptSaltRounds,
+  );
 
   await prisma.user.update({
     where: { id: userId },
     data: { password: hashedPassword },
   });
 
-  return { message: 'Đổi mật khẩu thành công' };
+  return { message: "Đổi mật khẩu thành công" };
 };
 
 // Generate JWT token
-const generateToken = (user: { id: number; email: string; roleId: number; role: { name: string } }) => {
+const generateToken = (user: {
+  id: number;
+  email: string;
+  roleId: number;
+  role: { name: string };
+}) => {
   const payload: JwtPayload = {
     id: user.id,
     email: user.email,
@@ -171,7 +212,8 @@ const generateToken = (user: { id: number; email: string; roleId: number; role: 
 
   const secret: jwt.Secret = authConfig.jwtSecret as unknown as jwt.Secret;
   const options: jwt.SignOptions = {
-    expiresIn: authConfig.jwtExpiresIn as unknown as jwt.SignOptions['expiresIn'],
+    expiresIn:
+      authConfig.jwtExpiresIn as unknown as jwt.SignOptions["expiresIn"],
   };
 
   return jwt.sign(payload as string | Buffer | object, secret, options);

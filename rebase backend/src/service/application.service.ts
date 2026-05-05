@@ -1,6 +1,6 @@
-import { prisma } from '../config/client';
-import { ApplyJobInput } from '../validation/job';
-import { ApplyStatus } from '@prisma/client';
+import { prisma } from "../config/client";
+import { ApplyJobInput } from "../validation/job";
+import { ApplyStatus } from "@prisma/client";
 
 // Apply for job
 export const applyForJob = async (userId: number, data: ApplyJobInput) => {
@@ -12,7 +12,7 @@ export const applyForJob = async (userId: number, data: ApplyJobInput) => {
   });
 
   if (!job) {
-    throw new Error('Tin tuyển dụng không tồn tại hoặc đã hết hạn');
+    throw new Error("Tin tuyển dụng không tồn tại hoặc đã hết hạn");
   }
 
   // Check if CV exists and belongs to user
@@ -21,7 +21,7 @@ export const applyForJob = async (userId: number, data: ApplyJobInput) => {
   });
 
   if (!cv) {
-    throw new Error('CV không tồn tại');
+    throw new Error("CV không tồn tại");
   }
 
   // Check if already applied
@@ -30,7 +30,7 @@ export const applyForJob = async (userId: number, data: ApplyJobInput) => {
   });
 
   if (existingApplication) {
-    throw new Error('Bạn đã ứng tuyển vị trí này');
+    throw new Error("Bạn đã ứng tuyển vị trí này");
   }
 
   // Create application
@@ -57,7 +57,11 @@ export const applyForJob = async (userId: number, data: ApplyJobInput) => {
 };
 
 // Get user applications
-export const getUserApplications = async (userId: number, page: number = 1, limit: number = 10) => {
+export const getUserApplications = async (
+  userId: number,
+  page: number = 1,
+  limit: number = 10,
+) => {
   const skip = (page - 1) * limit;
 
   const [applications, total] = await Promise.all([
@@ -75,7 +79,7 @@ export const getUserApplications = async (userId: number, page: number = 1, limi
         },
         cv: true,
       },
-      orderBy: { appliedAt: 'desc' },
+      orderBy: { appliedAt: "desc" },
     }),
     prisma.jobApplication.count({ where: { userId } }),
   ]);
@@ -92,7 +96,10 @@ export const getUserApplications = async (userId: number, page: number = 1, limi
 };
 
 // Get application by ID
-export const getApplicationById = async (applicationId: number, userId: number) => {
+export const getApplicationById = async (
+  applicationId: number,
+  userId: number,
+) => {
   const application = await prisma.jobApplication.findFirst({
     where: { id: applicationId, userId },
     include: {
@@ -106,31 +113,34 @@ export const getApplicationById = async (applicationId: number, userId: number) 
   });
 
   if (!application) {
-    throw new Error('Không tìm thấy đơn ứng tuyển');
+    throw new Error("Không tìm thấy đơn ứng tuyển");
   }
 
   return application;
 };
 
 // Cancel application
-export const cancelApplication = async (applicationId: number, userId: number) => {
+export const cancelApplication = async (
+  applicationId: number,
+  userId: number,
+) => {
   const application = await prisma.jobApplication.findFirst({
     where: { id: applicationId, userId },
   });
 
   if (!application) {
-    throw new Error('Không tìm thấy đơn ứng tuyển');
+    throw new Error("Không tìm thấy đơn ứng tuyển");
   }
 
-  if (application.status !== 'PENDING') {
-    throw new Error('Không thể hủy đơn đã được xử lý');
+  if (application.status !== "PENDING") {
+    throw new Error("Không thể hủy đơn đã được xử lý");
   }
 
   await prisma.jobApplication.delete({
     where: { id: applicationId },
   });
 
-  return { message: 'Hủy đơn ứng tuyển thành công' };
+  return { message: "Hủy đơn ứng tuyển thành công" };
 };
 
 // Get job applications (HR)
@@ -139,7 +149,7 @@ export const getJobApplications = async (
   companyId: number,
   page: number = 1,
   limit: number = 10,
-  status?: ApplyStatus
+  status?: ApplyStatus,
 ) => {
   const skip = (page - 1) * limit;
 
@@ -149,7 +159,7 @@ export const getJobApplications = async (
   });
 
   if (!job) {
-    throw new Error('Không tìm thấy tin tuyển dụng');
+    throw new Error("Không tìm thấy tin tuyển dụng");
   }
 
   const where: any = { jobPostId };
@@ -164,11 +174,17 @@ export const getJobApplications = async (
       take: limit,
       include: {
         user: {
-          select: { id: true, Fullname: true, email: true, phone: true, avatar: true },
+          select: {
+            id: true,
+            Fullname: true,
+            email: true,
+            phone: true,
+            avatar: true,
+          },
         },
         cv: true,
       },
-      orderBy: { appliedAt: 'desc' },
+      orderBy: { appliedAt: "desc" },
     }),
     prisma.jobApplication.count({ where }),
   ]);
@@ -189,7 +205,7 @@ export const updateApplicationStatus = async (
   applicationId: number,
   companyId: number,
   status: ApplyStatus,
-  note?: string
+  note?: string,
 ) => {
   // Verify application belongs to company's job
   const application = await prisma.jobApplication.findFirst({
@@ -200,7 +216,7 @@ export const updateApplicationStatus = async (
   });
 
   if (!application) {
-    throw new Error('Không tìm thấy đơn ứng tuyển');
+    throw new Error("Không tìm thấy đơn ứng tuyển");
   }
 
   const updatedApplication = await prisma.jobApplication.update({
@@ -226,7 +242,7 @@ export const getCompanyApplications = async (
   companyId: number,
   page: number = 1,
   limit: number = 10,
-  status?: ApplyStatus
+  status?: ApplyStatus,
 ) => {
   const skip = (page - 1) * limit;
 
@@ -245,14 +261,20 @@ export const getCompanyApplications = async (
       take: limit,
       include: {
         user: {
-          select: { id: true, Fullname: true, email: true, phone: true, avatar: true },
+          select: {
+            id: true,
+            Fullname: true,
+            email: true,
+            phone: true,
+            avatar: true,
+          },
         },
         jobPost: {
           select: { id: true, title: true },
         },
         cv: true,
       },
-      orderBy: { appliedAt: 'desc' },
+      orderBy: { appliedAt: "desc" },
     }),
     prisma.jobApplication.count({ where }),
   ]);
@@ -271,7 +293,7 @@ export const getCompanyApplications = async (
 // Get application statistics (HR)
 export const getApplicationStats = async (companyId: number) => {
   const stats = await prisma.jobApplication.groupBy({
-    by: ['status'],
+    by: ["status"],
     where: {
       jobPost: { companyId },
     },
@@ -286,10 +308,13 @@ export const getApplicationStats = async (companyId: number) => {
 
   return {
     total,
-    byStatus: stats.reduce((acc, stat) => {
-      acc[stat.status] = stat._count;
-      return acc;
-    }, {} as Record<string, number>),
+    byStatus: stats.reduce(
+      (acc, stat) => {
+        acc[stat.status] = stat._count;
+        return acc;
+      },
+      {} as Record<string, number>,
+    ),
   };
 };
 
@@ -297,7 +322,7 @@ export const getApplicationStats = async (companyId: number) => {
 export const searchCandidates = async (
   keyword: string,
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
 ) => {
   const skip = (page - 1) * limit;
 
@@ -314,7 +339,7 @@ export const searchCandidates = async (
     prisma.user.findMany({
       where: {
         ...where,
-        roleId: 1, // Job seekers only
+        role: { name: "JOB_SEEKER" },
         cvs: { some: {} }, // Has at least one CV
       },
       skip,
@@ -338,7 +363,7 @@ export const searchCandidates = async (
     prisma.user.count({
       where: {
         ...where,
-        roleId: 1,
+        role: { name: "JOB_SEEKER" },
         cvs: { some: {} },
       },
     }),

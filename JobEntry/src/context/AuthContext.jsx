@@ -1,11 +1,22 @@
-import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
-import { authAPI, setAuthToken, removeAuthToken, getAuthToken } from '../services/api';
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
+import {
+  authAPI,
+  setAuthToken,
+  removeAuthToken,
+  getAuthToken,
+} from "../services/api";
 
 // Role definitions with IDs
 export const ROLES = {
-  JOB_SEEKER: { id: 1, name: 'JOB_SEEKER', display: 'Job Seeker' },
-  HR: { id: 2, name: 'HR', display: 'HR / Recruiter' },
-  ADMIN: { id: 3, name: 'ADMIN', display: 'Admin' },
+  JOB_SEEKER: { id: 1, name: "JOB_SEEKER", display: "Job Seeker" },
+  HR: { id: 2, name: "HR", display: "HR / Recruiter" },
+  ADMIN: { id: 3, name: "ADMIN", display: "Admin" },
 };
 
 // Create Auth Context
@@ -21,6 +32,13 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(!!token);
 
+  const getRoleName = (roleValue) => {
+    if (!roleValue) return "";
+    if (typeof roleValue === "string") return roleValue;
+    if (typeof roleValue === "object" && roleValue.name) return roleValue.name;
+    return String(roleValue);
+  };
+
   /**
    * Logout user
    */
@@ -34,40 +52,52 @@ export const AuthProvider = ({ children }) => {
   /**
    * Fetch user profile
    */
-  const fetchProfile = useCallback(async (authToken) => {
-    if (!authToken) return;
-    
-    try {
-      setLoading(true);
-      const response = await authAPI.getProfile(authToken);
-      setLoading(false);
+  const fetchProfile = useCallback(
+    async (authToken) => {
+      if (!authToken) return;
 
-      if (response.success) {
-        // Safely extract user from potential nested structures
-        const userData = response.data?.data?.user || response.data?.user || response.data?.data || response.data;
-        
-        // Ensure user has role data
-        if (userData) {
-          const userRole = userData?.role || userData?.Role || 'JOB_SEEKER';
-          const roleKey = String(userRole).toUpperCase().trim();
-          const roleObj = ROLES[roleKey] || ROLES.JOB_SEEKER;
-          
-          userData.roleId = userData.roleId || roleObj.id;
-          userData.role = userData.role || roleObj.name;
-          userData.roleDisplay = userData.roleDisplay || roleObj.display;
-          
-          setUser(userData);
+      try {
+        setLoading(true);
+        const response = await authAPI.getProfile(authToken);
+        setLoading(false);
+
+        if (response.success) {
+          // Safely extract user from potential nested structures
+          const userData =
+            response.data?.data?.user ||
+            response.data?.user ||
+            response.data?.data ||
+            response.data;
+
+          // Ensure user has role data
+          if (userData) {
+            const userRole = getRoleName(
+              userData?.role ||
+                userData?.Role ||
+                userData?.roleName ||
+                "JOB_SEEKER",
+            );
+            const roleKey = String(userRole).toUpperCase().trim();
+            const roleObj = ROLES[roleKey] || ROLES.JOB_SEEKER;
+
+            userData.roleId = userData.roleId ?? roleObj.id;
+            userData.role = roleObj.name;
+            userData.roleDisplay = userData.roleDisplay || roleObj.display;
+
+            setUser(userData);
+          }
+        } else {
+          // Token invalid, logout
+          logout();
         }
-      } else {
-        // Token invalid, logout
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+        setLoading(false);
         logout();
       }
-    } catch (error) {
-      console.error('Failed to fetch profile:', error);
-      setLoading(false);
-      logout();
-    }
-  }, [logout]);
+    },
+    [logout],
+  );
 
   // Load user profile on mount if token exists
   useEffect(() => {
@@ -82,7 +112,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     // Validate role is provided
     if (!userData.role) {
-      return { success: false, error: 'Role is required' };
+      return { success: false, error: "Role is required" };
     }
 
     try {
@@ -92,11 +122,11 @@ export const AuthProvider = ({ children }) => {
 
       if (response.success) {
         const { token: newToken, user: newUser } = response.data.data;
-        
+
         // Get role object from ROLES mapping
         const roleKey = userData.role;
         const roleObj = ROLES[roleKey] || ROLES.JOB_SEEKER;
-        
+
         // Ensure user has role ID and role name
         newUser.roleId = roleObj.id;
         newUser.role = roleObj.name;
@@ -106,26 +136,35 @@ export const AuthProvider = ({ children }) => {
         setToken(newToken);
         setUser(newUser);
         setIsAuthenticated(true);
-        
+
         // Store in localStorage for persistence
-        localStorage.setItem('user_info', JSON.stringify({
-          id: newUser.id,
-          email: newUser.email,
-          fullname: newUser.Fullname || newUser.fullname,
-          role: newUser.role,
-          roleId: newUser.roleId,
-          roleDisplay: newUser.roleDisplay,
-          createdAt: new Date().toISOString()
-        }));
-        
-        return { success: true, data: { ...response.data.data, user: newUser } };
+        localStorage.setItem(
+          "user_info",
+          JSON.stringify({
+            id: newUser.id,
+            email: newUser.email,
+            fullname: newUser.Fullname || newUser.fullname,
+            role: newUser.role,
+            roleId: newUser.roleId,
+            roleDisplay: newUser.roleDisplay,
+            createdAt: new Date().toISOString(),
+          }),
+        );
+
+        return {
+          success: true,
+          data: { ...response.data.data, user: newUser },
+        };
       }
 
-      return { success: false, error: response.error || 'Registration failed' };
+      return { success: false, error: response.error || "Registration failed" };
     } catch (error) {
       setLoading(false);
-      console.error('Registration error:', error);
-      return { success: false, error: error.message || 'An unexpected error occurred' };
+      console.error("Registration error:", error);
+      return {
+        success: false,
+        error: error.message || "An unexpected error occurred",
+      };
     }
   };
 
@@ -140,41 +179,52 @@ export const AuthProvider = ({ children }) => {
 
       if (response.success) {
         const { token: newToken, user: newUser } = response.data.data;
-        
+
         // Get role object from ROLES mapping
-        const userRole = newUser?.role || newUser?.Role || 'JOB_SEEKER';
+        const userRole = getRoleName(
+          newUser?.role || newUser?.Role || newUser?.roleName || "JOB_SEEKER",
+        );
         const roleKey = userRole.toUpperCase();
         const roleObj = ROLES[roleKey] || ROLES.JOB_SEEKER;
-        
+
         // Ensure user has role ID and role name
-        newUser.roleId = roleObj.id;
+        newUser.roleId = newUser.roleId ?? roleObj.id;
         newUser.role = roleObj.name;
         newUser.roleDisplay = roleObj.display;
-        
+
         setAuthToken(newToken);
         setToken(newToken);
         setUser(newUser);
         setIsAuthenticated(true);
-        
+
         // Store in localStorage for persistence
-        localStorage.setItem('user_info', JSON.stringify({
-          id: newUser.id,
-          email: newUser.email,
-          fullname: newUser.Fullname || newUser.fullname,
-          role: newUser.role,
-          roleId: newUser.roleId,
-          roleDisplay: newUser.roleDisplay,
-          loginAt: new Date().toISOString()
-        }));
-        
-        return { success: true, data: { ...response.data.data, user: newUser } };
+        localStorage.setItem(
+          "user_info",
+          JSON.stringify({
+            id: newUser.id,
+            email: newUser.email,
+            fullname: newUser.Fullname || newUser.fullname,
+            role: newUser.role,
+            roleId: newUser.roleId,
+            roleDisplay: newUser.roleDisplay,
+            loginAt: new Date().toISOString(),
+          }),
+        );
+
+        return {
+          success: true,
+          data: { ...response.data.data, user: newUser },
+        };
       }
 
-      return { success: false, error: response.error || 'Login failed' };
+      return { success: false, error: response.error || "Login failed" };
     } catch (error) {
       setLoading(false);
-      console.error('Login error:', error);
-      return { success: false, error: error.message || 'An unexpected error occurred' };
+      console.error("Login error:", error);
+      return {
+        success: false,
+        error: error.message || "An unexpected error occurred",
+      };
     }
   };
 
@@ -189,22 +239,28 @@ export const AuthProvider = ({ children }) => {
 
       if (response.success) {
         setUser(response.data);
-        
+
         // Update localStorage
-        localStorage.setItem('user_info', JSON.stringify({
-          ...user,
-          ...response.data,
-          updatedAt: new Date().toISOString()
-        }));
-        
+        localStorage.setItem(
+          "user_info",
+          JSON.stringify({
+            ...user,
+            ...response.data,
+            updatedAt: new Date().toISOString(),
+          }),
+        );
+
         return { success: true, data: response.data };
       }
 
-      return { success: false, error: response.error || 'Update failed' };
+      return { success: false, error: response.error || "Update failed" };
     } catch (error) {
       setLoading(false);
-      console.error('Update profile error:', error);
-      return { success: false, error: error.message || 'An unexpected error occurred' };
+      console.error("Update profile error:", error);
+      return {
+        success: false,
+        error: error.message || "An unexpected error occurred",
+      };
     }
   };
 
@@ -221,11 +277,17 @@ export const AuthProvider = ({ children }) => {
         return { success: true };
       }
 
-      return { success: false, error: response.error || 'Password change failed' };
+      return {
+        success: false,
+        error: response.error || "Password change failed",
+      };
     } catch (error) {
       setLoading(false);
-      console.error('Change password error:', error);
-      return { success: false, error: error.message || 'An unexpected error occurred' };
+      console.error("Change password error:", error);
+      return {
+        success: false,
+        error: error.message || "An unexpected error occurred",
+      };
     }
   };
 
@@ -234,7 +296,7 @@ export const AuthProvider = ({ children }) => {
    */
   const handleLogout = useCallback(() => {
     logout();
-    localStorage.removeItem('user_info');
+    localStorage.removeItem("user_info");
   }, [logout]);
 
   /**
@@ -242,10 +304,10 @@ export const AuthProvider = ({ children }) => {
    */
   const getUserInfo = () => {
     try {
-      const stored = localStorage.getItem('user_info');
+      const stored = localStorage.getItem("user_info");
       return stored ? JSON.parse(stored) : null;
     } catch (error) {
-      console.error('Error getting user info from localStorage:', error);
+      console.error("Error getting user info from localStorage:", error);
       return null;
     }
   };
@@ -273,7 +335,7 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };

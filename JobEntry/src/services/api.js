@@ -1,20 +1,16 @@
 // API Service - Frontend API calls to Backend
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api/v1";
 
 /**
  * Generic API request handler
  */
 const apiRequest = async (endpoint, options = {}) => {
-  const {
-    method = 'GET',
-    body = null,
-    headers = {},
-    token = null,
-  } = options;
+  const { method = "GET", body = null, headers = {}, token = null } = options;
 
   const defaultHeaders = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     ...headers,
   };
 
@@ -39,7 +35,7 @@ const apiRequest = async (endpoint, options = {}) => {
     if (!response.ok) {
       throw {
         status: response.status,
-        message: data.message || 'An error occurred',
+        message: data.message || "An error occurred",
         data,
       };
     }
@@ -48,7 +44,7 @@ const apiRequest = async (endpoint, options = {}) => {
   } catch (error) {
     return {
       success: false,
-      error: error.message || 'Network error',
+      error: error.message || "Network error",
       details: error,
     };
   }
@@ -59,133 +55,148 @@ const apiRequest = async (endpoint, options = {}) => {
 // ============================================
 export const authAPI = {
   register: (userData) =>
-    apiRequest('/auth/register', { method: 'POST', body: userData }),
+    apiRequest("/auth/register", { method: "POST", body: userData }),
 
   login: (credentials) =>
-    apiRequest('/auth/login', { method: 'POST', body: credentials }),
+    apiRequest("/auth/login", { method: "POST", body: credentials }),
 
-  getProfile: (token) =>
-    apiRequest('/auth/profile', { token }),
+  getProfile: (token) => apiRequest("/auth/profile", { token }),
 
   updateProfile: (profileData, token) =>
-    apiRequest('/auth/profile', { method: 'PUT', body: profileData, token }),
+    apiRequest("/auth/profile", { method: "PUT", body: profileData, token }),
 
   changePassword: (passwordData, token) =>
-    apiRequest('/auth/change-password', { method: 'PUT', body: passwordData, token }),
+    apiRequest("/auth/change-password", {
+      method: "PUT",
+      body: passwordData,
+      token,
+    }),
 };
 
 // ============================================
 // JOB ENDPOINTS
 // ============================================
 export const jobAPI = {
-  getAllJobs: () =>
-    apiRequest('/jobs'),
+  getAllJobs: () => apiRequest("/jobs"),
 
-  getJobById: (id) =>
-    apiRequest(`/jobs/${id}`),
+  getJobById: (id) => apiRequest(`/jobs/${id}`),
 
   saveJob: (jobId, token) =>
-    apiRequest(`/jobs/${jobId}/save`, { method: 'POST', token }),
+    apiRequest(`/jobs/${jobId}/save`, { method: "POST", token }),
 
   unsaveJob: (jobId, token) =>
-    apiRequest(`/jobs/${jobId}/save`, { method: 'DELETE', token }),
+    apiRequest(`/jobs/${jobId}/save`, { method: "DELETE", token }),
 
-  getSavedJobs: (token) =>
-    apiRequest('/saved-jobs', { token }),
+  getSavedJobs: (token) => apiRequest("/saved-jobs", { token }),
 
   // HR only
   createJob: (jobData, token) =>
-    apiRequest('/hr/jobs', { method: 'POST', body: jobData, token }),
+    apiRequest("/hr/jobs", { method: "POST", body: jobData, token }),
 
-  getMyJobs: (token) =>
-    apiRequest('/hr/jobs', { token }),
+  getMyJobs: (token) => apiRequest("/hr/jobs", { token }),
 
   updateJob: (jobId, jobData, token) =>
-    apiRequest(`/hr/jobs/${jobId}`, { method: 'PUT', body: jobData, token }),
+    apiRequest(`/hr/jobs/${jobId}`, { method: "PUT", body: jobData, token }),
 
   deleteJob: (jobId, token) =>
-    apiRequest(`/hr/jobs/${jobId}`, { method: 'DELETE', token }),
+    apiRequest(`/hr/jobs/${jobId}`, { method: "DELETE", token }),
 
   toggleJobStatus: (jobId, token) =>
-    apiRequest(`/hr/jobs/${jobId}/toggle`, { method: 'PUT', token }),
+    apiRequest(`/hr/jobs/${jobId}/toggle`, { method: "PUT", token }),
 
   // Admin only
-  getPendingJobs: (token) =>
-    apiRequest('/admin/jobs/pending', { token }),
+  getPendingJobs: (token) => apiRequest("/admin/jobs/pending", { token }),
 
   approveJob: (jobId, token) =>
-    apiRequest(`/admin/jobs/${jobId}/approve`, { method: 'PUT', token }),
+    apiRequest(`/admin/jobs/${jobId}/approve`, { method: "PUT", token }),
 
   rejectJob: (jobId, reason, token) =>
-    apiRequest(`/admin/jobs/${jobId}/reject`, { method: 'PUT', body: { reason }, token }),
+    apiRequest(`/admin/jobs/${jobId}/reject`, {
+      method: "PUT",
+      body: { reason },
+      token,
+    }),
 
-  getAllJobsAdmin: (token) =>
-    apiRequest('/admin/jobs', { token }),
+  getAllJobsAdmin: (token) => apiRequest("/admin/jobs", { token }),
 
   deleteJobAdmin: (jobId, token) =>
-    apiRequest(`/admin/jobs/${jobId}`, { method: 'DELETE', token }),
+    apiRequest(`/admin/jobs/${jobId}`, { method: "DELETE", token }),
 
   updateJobAdmin: (jobId, jobData, token) =>
-    apiRequest(`/admin/jobs/${jobId}`, { method: 'PUT', body: jobData, token }),
+    apiRequest(`/admin/jobs/${jobId}`, { method: "PUT", body: jobData, token }),
 };
 
 // ============================================
 // COMPANY ENDPOINTS
 // ============================================
 export const companyAPI = {
-  getAllCompanies: () =>
-    apiRequest('/companies'),
+  getAllCompanies: () => apiRequest("/companies"),
 
-  getCompanyById: (id) =>
-    apiRequest(`/companies/${id}`),
+  getCompanyById: (id) => apiRequest(`/companies/${id}`),
 
-  getCompanyReviews: (id) =>
-    apiRequest(`/companies/${id}/reviews`),
+  getCompanyReviews: (id) => apiRequest(`/companies/${id}/reviews`),
 
   createCompany: (companyData, token) =>
-    apiRequest('/companies', { method: 'POST', body: companyData, token }),
+    apiRequest("/companies", { method: "POST", body: companyData, token }),
 
-  getMyCompany: (token) =>
-    apiRequest('/hr/company', { token }),
+  getMyCompany: (token) => apiRequest("/hr/company", { token }),
 
   updateCompany: (companyId, companyData, token) =>
-    apiRequest(`/companies/${companyId}`, { method: 'PUT', body: companyData, token }),
+    apiRequest(`/companies/${companyId}`, {
+      method: "PUT",
+      body: companyData,
+      token,
+    }),
 
   createReview: (reviewData, token) =>
-    apiRequest('/companies/reviews', { method: 'POST', body: reviewData, token }),
+    apiRequest("/companies/reviews", {
+      method: "POST",
+      body: reviewData,
+      token,
+    }),
 
   // Admin only
   deleteCompany: (companyId, token) =>
-    apiRequest(`/admin/companies/${companyId}`, { method: 'DELETE', token }),
+    apiRequest(`/admin/companies/${companyId}`, { method: "DELETE", token }),
 
   verifyCompany: (companyId, token) =>
-    apiRequest(`/admin/companies/${companyId}/verify`, { method: 'PUT', token }),
+    apiRequest(`/admin/companies/${companyId}/verify`, {
+      method: "PUT",
+      token,
+    }),
 };
 
 // ============================================
 // USER MANAGEMENT ENDPOINTS (Admin only)
 // ============================================
 export const userAPI = {
-  getAllUsers: (token) =>
-    apiRequest('/admin/users', { token }),
+  getAllUsers: (token) => apiRequest("/admin/users", { token }),
 
   getUserById: (userId, token) =>
     apiRequest(`/admin/users/${userId}`, { token }),
 
   updateUser: (userId, userData, token) =>
-    apiRequest(`/admin/users/${userId}`, { method: 'PUT', body: userData, token }),
+    apiRequest(`/admin/users/${userId}`, {
+      method: "PUT",
+      body: userData,
+      token,
+    }),
 
   deleteUser: (userId, token) =>
-    apiRequest(`/admin/users/${userId}`, { method: 'DELETE', token }),
+    apiRequest(`/admin/users/${userId}`, { method: "DELETE", token }),
 
   lockUser: (userId, token) =>
-    apiRequest(`/admin/users/${userId}/lock`, { method: 'PUT', token }),
+    apiRequest(`/admin/users/${userId}/lock`, { method: "PUT", token }),
 
   unlockUser: (userId, token) =>
-    apiRequest(`/admin/users/${userId}/unlock`, { method: 'PUT', token }),
+    apiRequest(`/admin/users/${userId}/unlock`, { method: "PUT", token }),
 
   sendMessage: (userId, message, token) =>
-    apiRequest(`/admin/users/${userId}/message`, { method: 'POST', body: { message }, token }),
+    apiRequest(`/admin/users/${userId}/message`, {
+      method: "POST",
+      body: { message },
+      token,
+    }),
 };
 
 // ============================================
@@ -193,27 +204,25 @@ export const userAPI = {
 // ============================================
 export const cvAPI = {
   uploadCV: (formData, token) =>
-    apiRequest('/cv', {
-      method: 'POST',
+    apiRequest("/cv", {
+      method: "POST",
       body: formData,
       headers: {}, // Let browser set Content-Type for FormData
       token,
     }),
 
-  getMyCVs: (token) =>
-    apiRequest('/cv', { token }),
+  getMyCVs: (token) => apiRequest("/cv", { token }),
 
-  getCVById: (cvId, token) =>
-    apiRequest(`/cv/${cvId}`, { token }),
+  getCVById: (cvId, token) => apiRequest(`/cv/${cvId}`, { token }),
 
   updateCV: (cvId, cvData, token) =>
-    apiRequest(`/cv/${cvId}`, { method: 'PUT', body: cvData, token }),
+    apiRequest(`/cv/${cvId}`, { method: "PUT", body: cvData, token }),
 
   deleteCV: (cvId, token) =>
-    apiRequest(`/cv/${cvId}`, { method: 'DELETE', token }),
+    apiRequest(`/cv/${cvId}`, { method: "DELETE", token }),
 
   setDefaultCV: (cvId, token) =>
-    apiRequest(`/cv/${cvId}/default`, { method: 'PUT', token }),
+    apiRequest(`/cv/${cvId}/default`, { method: "PUT", token }),
 };
 
 // ============================================
@@ -221,61 +230,98 @@ export const cvAPI = {
 // ============================================
 export const applicationAPI = {
   submitApplication: (applicationData, token) =>
-    apiRequest('/applications', { method: 'POST', body: applicationData, token }),
+    apiRequest("/applications", {
+      method: "POST",
+      body: applicationData,
+      token,
+    }),
 
-  getMyApplications: (token) =>
-    apiRequest('/applications', { token }),
+  getMyApplications: (token) => apiRequest("/applications", { token }),
 
   getApplicationById: (appId, token) =>
     apiRequest(`/applications/${appId}`, { token }),
 
   withdrawApplication: (appId, token) =>
-    apiRequest(`/applications/${appId}`, { method: 'DELETE', token }),
+    apiRequest(`/applications/${appId}`, { method: "DELETE", token }),
 
   // HR only
   getApplicationsForJob: (jobId, token) =>
     apiRequest(`/hr/jobs/${jobId}/applications`, { token }),
 
-  updateApplicationStatus: (appId, status, token) =>
-    apiRequest(`/applications/${appId}`, { method: 'PUT', body: { status }, token }),
+  getCompanyApplications: (token, { status, page = 1, limit = 10 } = {}) => {
+    const params = new URLSearchParams();
+    if (status) params.append("status", status);
+    params.append("page", String(page));
+    params.append("limit", String(limit));
+    return apiRequest(`/hr/applications?${params.toString()}`, { token });
+  },
+
+  getApplicationStats: (token) =>
+    apiRequest("/hr/applications/stats", { token }),
+
+  searchCandidates: ({ keyword = "", page = 1, limit = 10 } = {}, token) => {
+    const params = new URLSearchParams();
+    if (keyword) params.append("keyword", keyword);
+    params.append("page", String(page));
+    params.append("limit", String(limit));
+    return apiRequest(`/hr/candidates?${params.toString()}`, { token });
+  },
+
+  updateApplicationStatus: (appId, { status, note }, token) =>
+    apiRequest(`/hr/applications/${appId}/status`, {
+      method: "PUT",
+      body: { status, note },
+      token,
+    }),
+
+  scheduleInterview: (appId, interviewData, token) =>
+    apiRequest(`/hr/applications/${appId}/status`, {
+      method: "PUT",
+      body: {
+        status: "VIEWED",
+        note: interviewData?.note || "",
+      },
+      token,
+    }),
 };
 
 // ============================================
 // CATEGORY ENDPOINTS
 // ============================================
 export const categoryAPI = {
-  getAllCategories: () =>
-    apiRequest('/categories'),
+  getAllCategories: () => apiRequest("/categories"),
 
-  getCategoryById: (id) =>
-    apiRequest(`/categories/${id}`),
+  getCategoryById: (id) => apiRequest(`/categories/${id}`),
 
   // Admin only
   createCategory: (categoryData, token) =>
-    apiRequest('/categories', { method: 'POST', body: categoryData, token }),
+    apiRequest("/categories", { method: "POST", body: categoryData, token }),
 
   updateCategory: (categoryId, categoryData, token) =>
-    apiRequest(`/categories/${categoryId}`, { method: 'PUT', body: categoryData, token }),
+    apiRequest(`/categories/${categoryId}`, {
+      method: "PUT",
+      body: categoryData,
+      token,
+    }),
 
   deleteCategory: (categoryId, token) =>
-    apiRequest(`/categories/${categoryId}`, { method: 'DELETE', token }),
+    apiRequest(`/categories/${categoryId}`, { method: "DELETE", token }),
 };
 
 // ============================================
 // NOTIFICATION ENDPOINTS
 // ============================================
 export const notificationAPI = {
-  getNotifications: (token) =>
-    apiRequest('/notifications', { token }),
+  getNotifications: (token) => apiRequest("/notifications", { token }),
 
   markAsRead: (notificationId, token) =>
-    apiRequest(`/notifications/${notificationId}`, { method: 'PUT', token }),
+    apiRequest(`/notifications/${notificationId}`, { method: "PUT", token }),
 
   markAllAsRead: (token) =>
-    apiRequest('/notifications/mark-all-read', { method: 'PUT', token }),
+    apiRequest("/notifications/mark-all-read", { method: "PUT", token }),
 
   deleteNotification: (notificationId, token) =>
-    apiRequest(`/notifications/${notificationId}`, { method: 'DELETE', token }),
+    apiRequest(`/notifications/${notificationId}`, { method: "DELETE", token }),
 };
 
 // ============================================
@@ -287,7 +333,7 @@ export const notificationAPI = {
  */
 export const setAuthToken = (token) => {
   if (token) {
-    localStorage.setItem('authToken', token);
+    localStorage.setItem("authToken", token);
   }
 };
 
@@ -295,14 +341,14 @@ export const setAuthToken = (token) => {
  * Get authentication token from localStorage
  */
 export const getAuthToken = () => {
-  return localStorage.getItem('authToken');
+  return localStorage.getItem("authToken");
 };
 
 /**
  * Remove authentication token
  */
 export const removeAuthToken = () => {
-  localStorage.removeItem('authToken');
+  localStorage.removeItem("authToken");
 };
 
 /**
