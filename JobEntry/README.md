@@ -1,16 +1,77 @@
-# React + Vite
+# JobEntry Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Giao diện web cho hệ thống Career CV. Ứng dụng được xây bằng React + Vite, hỗ trợ 3 vai trò chính: Candidate, HR và Admin.
 
-Currently, two official plugins are available:
+## Tính năng chính
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Trang public: trang chủ, danh sách việc làm, chi tiết việc, danh sách công ty.
+- Xác thực người dùng: đăng nhập, đăng ký.
+- Candidate dashboard: quản lý CV, đơn ứng tuyển, việc đã lưu.
+- HR dashboard: quản lý tin tuyển dụng, tìm ứng viên, phỏng vấn.
+- Admin dashboard: quản lý người dùng và duyệt tin tuyển dụng.
 
-## React Compiler
+## Yêu cầu môi trường
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js 18+.
+- Backend Career CV API đang chạy.
 
-## Expanding the ESLint configuration
+## Cài đặt
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+
+copy .env.example .env
+# Cấu hình VITE_API_BASE_URL nếu backend không chạy ở localhost:5000
+
+npm run dev
+```
+
+## Biến môi trường
+
+Frontend hiện dùng biến sau:
+
+| Biến                | Mô tả                                                    |
+| ------------------- | -------------------------------------------------------- |
+| `VITE_API_BASE_URL` | URL backend API, mặc định `http://localhost:5000/api/v1` |
+
+## Scripts
+
+```bash
+npm run dev      # Chạy Vite dev server
+npm run build    # Build production
+npm run lint     # Chạy ESLint
+npm run preview  # Xem bản build local
+```
+
+## Chạy cùng backend
+
+1. Khởi động backend Career CV trước.
+2. Đảm bảo backend có thể truy cập tại `http://localhost:5000` hoặc cập nhật `VITE_API_BASE_URL`.
+3. Chạy frontend bằng `npm run dev`.
+
+## Cấu trúc thư mục
+
+```text
+src/
+├── admin/          # Trang quản trị
+├── candidate/      # Trang ứng viên
+├── components/     # UI dùng chung
+├── context/        # Auth context
+├── hooks/          # Custom hooks
+├── hr/             # Trang HR
+├── layout/         # Layout dùng chung
+├── services/       # Gọi API backend
+└── App.jsx         # Router chính
+```
+
+## Router chính
+
+- Public: `/`, `/jobs`, `/jobs/:id`, `/companies`
+- Auth: `/login`, `/register`
+- Candidate: `/candidate/*`
+- HR: `/hr/*`
+- Admin: `/admin/*`
+
+## Ghi chú API
+
+Frontend gọi backend qua file [src/services/api.js](src/services/api.js). Mặc định base URL là `http://localhost:5000/api/v1`, nên nếu backend đổi cổng hoặc domain thì chỉ cần cập nhật `VITE_API_BASE_URL`.
