@@ -2,6 +2,20 @@ import { prisma } from "../config/client";
 import { ApplyJobInput } from "../validation/job";
 import { ApplyStatus } from "@prisma/client";
 
+const normalizeApplication = <T extends { jobPost?: any; jobPostId?: number }>(
+  application: T,
+) => {
+  const job = application.jobPost ?? null;
+
+  return {
+    ...application,
+    job,
+    jobId: job?.id ?? application.jobPostId ?? null,
+    jobPost: job,
+    jobPostId: application.jobPostId ?? job?.id ?? null,
+  };
+};
+
 // Apply for job
 export const applyForJob = async (userId: number, data: ApplyJobInput) => {
   const { jobPostId, cvId, coverLetter } = data;
@@ -53,7 +67,7 @@ export const applyForJob = async (userId: number, data: ApplyJobInput) => {
     },
   });
 
-  return application;
+  return normalizeApplication(application);
 };
 
 // Get user applications
@@ -85,7 +99,7 @@ export const getUserApplications = async (
   ]);
 
   return {
-    applications,
+    applications: applications.map(normalizeApplication),
     meta: {
       page,
       limit,
@@ -190,7 +204,7 @@ export const getJobApplications = async (
   ]);
 
   return {
-    applications,
+    applications: applications.map(normalizeApplication),
     meta: {
       page,
       limit,

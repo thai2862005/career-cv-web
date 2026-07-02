@@ -8,6 +8,16 @@ import {
 import { ZodError } from "zod";
 import { prisma } from "../config/client";
 
+const buildFieldErrors = (error: ZodError) => {
+  return error.errors.reduce<Record<string, string>>((acc, issue) => {
+    const field = issue.path[0];
+    if (typeof field === "string" && !acc[field]) {
+      acc[field] = issue.message;
+    }
+    return acc;
+  }, {});
+};
+
 // Create job post
 export const createJobPost = async (
   req: Request,
@@ -43,6 +53,7 @@ export const createJobPost = async (
         success: false,
         message: "Dữ liệu không hợp lệ",
         errors: error.errors,
+        fieldErrors: buildFieldErrors(error),
       });
       return;
     }
@@ -64,6 +75,9 @@ export const getAllJobs = async (
       location: req.query.location,
       categoryId: req.query.categoryId
         ? parseInt(req.query.categoryId as string)
+        : undefined,
+      companyId: req.query.companyId
+        ? parseInt(req.query.companyId as string)
         : undefined,
       jobType: req.query.jobType,
       salaryMin: req.query.salaryMin
@@ -152,6 +166,7 @@ export const updateJobPost = async (
         success: false,
         message: "Dữ liệu không hợp lệ",
         errors: error.errors,
+        fieldErrors: buildFieldErrors(error),
       });
       return;
     }
@@ -246,13 +261,11 @@ export const getMyJobs = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (!company) {
-      res
-        .status(200)
-        .json({
-          success: true,
-          data: [],
-          meta: { page: 1, limit: 10, total: 0, totalPages: 0 },
-        });
+      res.status(200).json({
+        success: true,
+        data: [],
+        meta: { page: 1, limit: 10, total: 0, totalPages: 0 },
+      });
       return;
     }
 

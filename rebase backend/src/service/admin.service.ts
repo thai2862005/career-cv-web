@@ -1,6 +1,6 @@
-import { prisma } from '../config/client';
-import bcrypt from 'bcrypt';
-import { authConfig } from '../config/auth';
+import { prisma } from "../config/client";
+import bcrypt from "bcrypt";
+import { authConfig } from "../config/auth";
 
 // Get dashboard statistics
 export const getDashboardStats = async () => {
@@ -21,23 +21,23 @@ export const getDashboardStats = async () => {
     prisma.jobApplication.count(),
     prisma.jobPost.count({ where: { isApproved: false } }),
     prisma.user.groupBy({
-      by: ['roleId'],
+      by: ["roleId"],
       _count: true,
     }),
     prisma.jobApplication.groupBy({
-      by: ['status'],
+      by: ["status"],
       _count: true,
     }),
     prisma.jobPost.findMany({
       take: 5,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       include: {
         company: { select: { name: true } },
       },
     }),
     prisma.jobApplication.findMany({
       take: 5,
-      orderBy: { appliedAt: 'desc' },
+      orderBy: { appliedAt: "desc" },
       include: {
         user: { select: { Fullname: true } },
         jobPost: { select: { title: true } },
@@ -61,7 +61,11 @@ export const getDashboardStats = async () => {
 };
 
 // Get all users (Admin)
-export const getAllUsers = async (page: number = 1, limit: number = 20, roleId?: number) => {
+export const getAllUsers = async (
+  page: number = 1,
+  limit: number = 20,
+  roleId?: number,
+) => {
   const skip = (page - 1) * limit;
 
   const where: any = {};
@@ -90,7 +94,7 @@ export const getAllUsers = async (page: number = 1, limit: number = 20, roleId?:
           select: { applications: true, cvs: true },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     }),
     prisma.user.count({ where }),
   ]);
@@ -121,7 +125,7 @@ export const getUserById = async (userId: number) => {
             },
           },
         },
-        orderBy: { appliedAt: 'desc' },
+        orderBy: { appliedAt: "desc" },
         take: 10,
       },
       company: true,
@@ -129,7 +133,7 @@ export const getUserById = async (userId: number) => {
   });
 
   if (!user) {
-    throw new Error('Không tìm thấy người dùng');
+    throw new Error("Không tìm thấy người dùng");
   }
 
   const { password, ...userWithoutPassword } = user;
@@ -137,13 +141,16 @@ export const getUserById = async (userId: number) => {
 };
 
 // Update user (Admin)
-export const updateUser = async (userId: number, data: {
-  Fullname?: string;
-  phone?: string;
-  address?: string;
-  roleId?: number;
-  isActive?: boolean;
-}) => {
+export const updateUser = async (
+  userId: number,
+  data: {
+    Fullname?: string;
+    phone?: string;
+    address?: string;
+    roleId?: number;
+    isActive?: boolean;
+  },
+) => {
   const user = await prisma.user.update({
     where: { id: userId },
     data,
@@ -163,7 +170,7 @@ export const toggleUserStatus = async (userId: number) => {
   });
 
   if (!user) {
-    throw new Error('Không tìm thấy người dùng');
+    throw new Error("Không tìm thấy người dùng");
   }
 
   const updatedUser = await prisma.user.update({
@@ -179,34 +186,42 @@ export const toggleUserStatus = async (userId: number) => {
 export const deleteUser = async (userId: number) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
+    include: { role: true },
   });
 
   if (!user) {
-    throw new Error('Không tìm thấy người dùng');
+    throw new Error("Không tìm thấy người dùng");
   }
 
-  // Check if user is admin
-  if (user.roleId === 3) {
-    throw new Error('Không thể xóa tài khoản admin');
+  // Prevent deleting admin accounts by role name (avoid relying on hardcoded numeric IDs)
+  const roleName = String(user.role?.name || "").toUpperCase();
+  if (roleName === "ADMIN") {
+    throw new Error("Không thể xóa tài khoản admin");
   }
 
   await prisma.user.delete({
     where: { id: userId },
   });
 
-  return { message: 'Xóa người dùng thành công' };
+  return { message: "Xóa người dùng thành công" };
 };
 
 // Reset user password (Admin)
-export const resetUserPassword = async (userId: number, newPassword: string) => {
-  const hashedPassword = await bcrypt.hash(newPassword, authConfig.bcryptSaltRounds);
+export const resetUserPassword = async (
+  userId: number,
+  newPassword: string,
+) => {
+  const hashedPassword = await bcrypt.hash(
+    newPassword,
+    authConfig.bcryptSaltRounds,
+  );
 
   await prisma.user.update({
     where: { id: userId },
     data: { password: hashedPassword },
   });
 
-  return { message: 'Đặt lại mật khẩu thành công' };
+  return { message: "Đặt lại mật khẩu thành công" };
 };
 
 // Get all roles
@@ -232,42 +247,40 @@ export const getSystemReports = async (startDate?: Date, endDate?: Date) => {
     dateFilter.lte = endDate;
   }
 
-  const [
-    newUsers,
-    newJobs,
-    newApplications,
-    jobsByCategory,
-    topCompanies,
-  ] = await Promise.all([
-    prisma.user.count({
-      where: dateFilter.gte || dateFilter.lte ? { createdAt: dateFilter } : {},
-    }),
-    prisma.jobPost.count({
-      where: dateFilter.gte || dateFilter.lte ? { createdAt: dateFilter } : {},
-    }),
-    prisma.jobApplication.count({
-      where: dateFilter.gte || dateFilter.lte ? { appliedAt: dateFilter } : {},
-    }),
-    prisma.jobPost.groupBy({
-      by: ['categoryId'],
-      _count: true,
-      orderBy: { _count: { categoryId: 'desc' } },
-      take: 10,
-    }),
-    prisma.company.findMany({
-      take: 10,
-      include: {
-        _count: {
-          select: { jobs: true },
+  const [newUsers, newJobs, newApplications, jobsByCategory, topCompanies] =
+    await Promise.all([
+      prisma.user.count({
+        where:
+          dateFilter.gte || dateFilter.lte ? { createdAt: dateFilter } : {},
+      }),
+      prisma.jobPost.count({
+        where:
+          dateFilter.gte || dateFilter.lte ? { createdAt: dateFilter } : {},
+      }),
+      prisma.jobApplication.count({
+        where:
+          dateFilter.gte || dateFilter.lte ? { appliedAt: dateFilter } : {},
+      }),
+      prisma.jobPost.groupBy({
+        by: ["categoryId"],
+        _count: true,
+        orderBy: { _count: { categoryId: "desc" } },
+        take: 10,
+      }),
+      prisma.company.findMany({
+        take: 10,
+        include: {
+          _count: {
+            select: { jobs: true },
+          },
         },
-      },
-      orderBy: {
-        jobs: {
-          _count: 'desc',
+        orderBy: {
+          jobs: {
+            _count: "desc",
+          },
         },
-      },
-    }),
-  ]);
+      }),
+    ]);
 
   return {
     newUsers,
@@ -279,7 +292,10 @@ export const getSystemReports = async (startDate?: Date, endDate?: Date) => {
 };
 
 // Get all companies (Admin)
-export const getAllCompaniesAdmin = async (page: number = 1, limit: number = 20) => {
+export const getAllCompaniesAdmin = async (
+  page: number = 1,
+  limit: number = 20,
+) => {
   const skip = (page - 1) * limit;
 
   const [companies, total] = await Promise.all([
@@ -294,7 +310,7 @@ export const getAllCompaniesAdmin = async (page: number = 1, limit: number = 20)
           select: { jobs: true, reviews: true },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     }),
     prisma.company.count(),
   ]);

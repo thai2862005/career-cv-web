@@ -5,6 +5,20 @@ import {
   SearchJobInput,
 } from "../validation/job";
 
+const normalizeSavedJob = <T extends { jobPost?: any; jobPostId?: number }>(
+  savedJob: T,
+) => {
+  const job = savedJob.jobPost ?? null;
+
+  return {
+    ...savedJob,
+    job,
+    jobId: job?.id ?? savedJob.jobPostId ?? null,
+    jobPost: job,
+    jobPostId: savedJob.jobPostId ?? job?.id ?? null,
+  };
+};
+
 // Create job post
 export const createJobPost = async (
   companyId: number,
@@ -46,6 +60,7 @@ export const getAllJobPosts = async (filters: SearchJobInput) => {
     keyword,
     location,
     categoryId,
+    companyId,
     jobType,
     salaryMin,
     salaryMax,
@@ -58,6 +73,10 @@ export const getAllJobPosts = async (filters: SearchJobInput) => {
     isActive: true,
     isApproved: true,
   };
+
+  if (companyId) {
+    where.companyId = companyId;
+  }
 
   if (keyword) {
     where.OR = [
@@ -94,7 +113,18 @@ export const getAllJobPosts = async (filters: SearchJobInput) => {
       take: limit,
       include: {
         company: {
-          select: { id: true, name: true, logoUrl: true, location: true },
+          select: {
+            id: true,
+            name: true,
+            logoUrl: true,
+            location: true,
+            description: true,
+            size: true,
+            industry: true,
+            isVerified: true,
+            website: true,
+            coverImage: true,
+          },
         },
         category: true,
         _count: {
@@ -363,7 +393,7 @@ export const saveJob = async (userId: number, jobPostId: number) => {
     },
   });
 
-  return savedJob;
+  return normalizeSavedJob(savedJob);
 };
 
 // Unsave job
@@ -416,7 +446,7 @@ export const getSavedJobs = async (
   ]);
 
   return {
-    savedJobs,
+    savedJobs: savedJobs.map(normalizeSavedJob),
     meta: {
       page,
       limit,

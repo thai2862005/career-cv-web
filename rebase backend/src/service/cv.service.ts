@@ -1,11 +1,11 @@
-import { prisma } from '../config/client';
-import { CreateCVInput, UpdateCVInput } from '../validation/cv';
+import { prisma } from "../config/client";
+import { CreateCVInput, UpdateCVInput } from "../validation/cv";
 
 // Create CV
 export const createCV = async (
   userId: number,
   data: CreateCVInput,
-  file: { filename: string; path: string; size: number }
+  file: { filename: string; path: string; size: number },
 ) => {
   // If setting as default, unset other defaults
   if (data.isDefault) {
@@ -20,7 +20,7 @@ export const createCV = async (
       userId,
       title: data.title,
       filename: file.filename,
-      fileUrl: file.path,
+      fileUrl: `/uploads/cv/${file.filename}`,
       fileSize: file.size,
       isDefault: data.isDefault,
     },
@@ -33,7 +33,7 @@ export const createCV = async (
 export const getUserCVs = async (userId: number) => {
   const cvs = await prisma.cV.findMany({
     where: { userId },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
   });
 
   return cvs;
@@ -46,20 +46,24 @@ export const getCVById = async (cvId: number, userId: number) => {
   });
 
   if (!cv) {
-    throw new Error('Không tìm thấy CV');
+    throw new Error("Không tìm thấy CV");
   }
 
   return cv;
 };
 
 // Update CV
-export const updateCV = async (cvId: number, userId: number, data: UpdateCVInput) => {
+export const updateCV = async (
+  cvId: number,
+  userId: number,
+  data: UpdateCVInput,
+) => {
   const cv = await prisma.cV.findFirst({
     where: { id: cvId, userId },
   });
 
   if (!cv) {
-    throw new Error('Không tìm thấy CV');
+    throw new Error("Không tìm thấy CV");
   }
 
   // If setting as default, unset other defaults
@@ -85,7 +89,7 @@ export const deleteCV = async (cvId: number, userId: number) => {
   });
 
   if (!cv) {
-    throw new Error('Không tìm thấy CV');
+    throw new Error("Không tìm thấy CV");
   }
 
   // Check if CV is used in any application
@@ -94,14 +98,14 @@ export const deleteCV = async (cvId: number, userId: number) => {
   });
 
   if (applications) {
-    throw new Error('Không thể xóa CV đang được sử dụng trong đơn ứng tuyển');
+    throw new Error("Không thể xóa CV đang được sử dụng trong đơn ứng tuyển");
   }
 
   await prisma.cV.delete({
     where: { id: cvId },
   });
 
-  return { message: 'Xóa CV thành công' };
+  return { message: "Xóa CV thành công" };
 };
 
 // Set default CV
@@ -111,7 +115,7 @@ export const setDefaultCV = async (cvId: number, userId: number) => {
   });
 
   if (!cv) {
-    throw new Error('Không tìm thấy CV');
+    throw new Error("Không tìm thấy CV");
   }
 
   // Unset other defaults

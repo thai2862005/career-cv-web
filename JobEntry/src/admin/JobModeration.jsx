@@ -90,7 +90,19 @@ export const AdminJobModeration = () => {
 
     if (result.success) {
       setPendingJobs(pendingJobs.filter((job) => job.id !== jobId));
-      alert("Job approved successfully!");
+
+      // Refresh all jobs to update the approved jobs list
+      await fetchAllJobs();
+
+      // Trigger event for Home page to refresh job list immediately
+      window.localStorage.setItem(
+        "jobApproved",
+        JSON.stringify({ timestamp: new Date().toISOString(), jobId }),
+      );
+
+      alert(
+        "Job approved successfully! The job is now visible on the home page.",
+      );
     } else {
       alert(`Error: ${result.error}`);
     }

@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { jobAPI } from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import { useState, useEffect } from "react";
+import { jobAPI } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 /**
- * Hook to fetch all jobs
+ * Hook to fetch all jobs with auto-refresh and real-time updates
  */
 export const useJobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -11,7 +11,30 @@ export const useJobs = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Fetch jobs immediately on mount
     fetchJobs();
+
+    // Set up interval to refetch jobs every 30 seconds
+    // This ensures newly approved jobs appear on the home page
+    const pollInterval = setInterval(() => {
+      fetchJobs();
+    }, 30000); // 30 seconds
+
+    // Listen for job approval events from admin
+    const handleJobApproved = (event) => {
+      if (event.key === "jobApproved") {
+        // Refetch jobs immediately when admin approves a job
+        fetchJobs();
+      }
+    };
+
+    window.addEventListener("storage", handleJobApproved);
+
+    // Cleanup
+    return () => {
+      clearInterval(pollInterval);
+      window.removeEventListener("storage", handleJobApproved);
+    };
   }, []);
 
   const fetchJobs = async () => {
@@ -21,14 +44,17 @@ export const useJobs = () => {
     setLoading(false);
 
     if (response.success) {
-  const data = response.data;
-  // thử các structure phổ biến
-  const jobList = Array.isArray(data) ? data 
-    : Array.isArray(data?.jobs) ? data.jobs
-    : Array.isArray(data?.data) ? data.data
-    : [];
-  setJobs(jobList);
-}
+      const data = response.data;
+      // Try common response structures
+      const jobList = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.jobs)
+          ? data.jobs
+          : Array.isArray(data?.data)
+            ? data.data
+            : [];
+      setJobs(jobList);
+    }
   };
 
   return { jobs, loading, error, refetch: fetchJobs };

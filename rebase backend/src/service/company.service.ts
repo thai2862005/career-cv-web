@@ -1,15 +1,22 @@
-import { prisma } from '../config/client';
-import { CreateCompanyInput, UpdateCompanyInput, CompanyReviewInput } from '../validation/company';
+import { prisma } from "../config/client";
+import {
+  CreateCompanyInput,
+  UpdateCompanyInput,
+  CompanyReviewInput,
+} from "../validation/company";
 
 // Create company
-export const createCompany = async (hrUserId: number, data: CreateCompanyInput) => {
+export const createCompany = async (
+  hrUserId: number,
+  data: CreateCompanyInput,
+) => {
   // Check if HR already has a company
   const existingCompany = await prisma.company.findFirst({
     where: { hrUserId },
   });
 
   if (existingCompany) {
-    throw new Error('Bạn đã có công ty');
+    throw new Error("Bạn đã có công ty");
   }
 
   const company = await prisma.company.create({
@@ -44,13 +51,30 @@ export const getAllCompanies = async (page: number = 1, limit: number = 10) => {
           select: { jobs: true, reviews: true },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     }),
     prisma.company.count(),
   ]);
 
+  const companiesWithOpenJobCount = await Promise.all(
+    companies.map(async (company) => {
+      const openJobCount = await prisma.jobPost.count({
+        where: {
+          companyId: company.id,
+          isActive: true,
+          isApproved: true,
+        },
+      });
+
+      return {
+        ...company,
+        openJobCount,
+      };
+    }),
+  );
+
   return {
-    companies,
+    companies: companiesWithOpenJobCount,
     meta: {
       page,
       limit,
@@ -67,7 +91,7 @@ export const getCompanyById = async (companyId: number) => {
     include: {
       jobs: {
         where: { isActive: true, isApproved: true },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         take: 10,
       },
       reviews: {
@@ -76,7 +100,7 @@ export const getCompanyById = async (companyId: number) => {
             select: { id: true, Fullname: true, avatar: true },
           },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         take: 5,
       },
       _count: {
@@ -86,8 +110,16 @@ export const getCompanyById = async (companyId: number) => {
   });
 
   if (!company) {
-    throw new Error('Không tìm thấy công ty');
+    throw new Error("Không tìm thấy công ty");
   }
+
+  const openJobCount = await prisma.jobPost.count({
+    where: {
+      companyId,
+      isActive: true,
+      isApproved: true,
+    },
+  });
 
   // Calculate average rating
   const avgRating = await prisma.companyReview.aggregate({
@@ -97,18 +129,23 @@ export const getCompanyById = async (companyId: number) => {
 
   return {
     ...company,
+    openJobCount,
     avgRating: avgRating._avg.rating || 0,
   };
 };
 
 // Update company
-export const updateCompany = async (companyId: number, hrUserId: number, data: UpdateCompanyInput) => {
+export const updateCompany = async (
+  companyId: number,
+  hrUserId: number,
+  data: UpdateCompanyInput,
+) => {
   const company = await prisma.company.findFirst({
     where: { id: companyId, hrUserId },
   });
 
   if (!company) {
-    throw new Error('Không tìm thấy công ty hoặc bạn không có quyền');
+    throw new Error("Không tìm thấy công ty hoặc bạn không có quyền");
   }
 
   const updatedCompany = await prisma.company.update({
@@ -126,14 +163,14 @@ export const deleteCompany = async (companyId: number) => {
   });
 
   if (!company) {
-    throw new Error('Không tìm thấy công ty');
+    throw new Error("Không tìm thấy công ty");
   }
 
   await prisma.company.delete({
     where: { id: companyId },
   });
 
-  return { message: 'Xóa công ty thành công' };
+  return { message: "Xóa công ty thành công" };
 };
 
 // Verify company (Admin only)
@@ -152,7 +189,7 @@ export const getMyCompany = async (hrUserId: number) => {
     where: { hrUserId },
     include: {
       jobs: {
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
       },
       _count: {
         select: { jobs: true, reviews: true },
@@ -160,18 +197,36 @@ export const getMyCompany = async (hrUserId: number) => {
     },
   });
 
-  return company;
+  if (!company) {
+    return company;
+  }
+
+  const openJobCount = await prisma.jobPost.count({
+    where: {
+      companyId: company.id,
+      isActive: true,
+      isApproved: true,
+    },
+  });
+
+  return {
+    ...company,
+    openJobCount,
+  };
 };
 
 // Create company review
-export const createReview = async (userId: number, data: CompanyReviewInput) => {
+export const createReview = async (
+  userId: number,
+  data: CompanyReviewInput,
+) => {
   // Check if user already reviewed
   const existingReview = await prisma.companyReview.findFirst({
     where: { userId, companyId: data.companyId },
   });
 
   if (existingReview) {
-    throw new Error('Bạn đã đánh giá công ty này');
+    throw new Error("Bạn đã đánh giá công ty này");
   }
 
   const review = await prisma.companyReview.create({
@@ -200,7 +255,11 @@ export const createReview = async (userId: number, data: CompanyReviewInput) => 
 };
 
 // Get company reviews
-export const getCompanyReviews = async (companyId: number, page: number = 1, limit: number = 10) => {
+export const getCompanyReviews = async (
+  companyId: number,
+  page: number = 1,
+  limit: number = 10,
+) => {
   const skip = (page - 1) * limit;
 
   const [reviews, total] = await Promise.all([
@@ -213,7 +272,7 @@ export const getCompanyReviews = async (companyId: number, page: number = 1, lim
           select: { id: true, Fullname: true, avatar: true },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     }),
     prisma.companyReview.count({ where: { companyId } }),
   ]);

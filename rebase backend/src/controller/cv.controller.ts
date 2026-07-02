@@ -1,22 +1,30 @@
-import { Request, Response } from 'express';
-import * as cvService from '../service/cv.service';
-import { createCVSchema, updateCVSchema } from '../validation/cv';
-import { ZodError } from 'zod';
+import { Request, Response } from "express";
+import path from "path";
+import * as cvService from "../service/cv.service";
+import { createCVSchema, updateCVSchema } from "../validation/cv";
+import { ZodError } from "zod";
 
 // Upload CV
 export const uploadCV = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      res.status(401).json({ success: false, message: 'Chưa đăng nhập' });
+      res.status(401).json({ success: false, message: "Chưa đăng nhập" });
       return;
     }
 
     if (!req.file) {
-      res.status(400).json({ success: false, message: 'Vui lòng tải lên file CV' });
+      res
+        .status(400)
+        .json({ success: false, message: "Vui lòng tải lên file CV" });
       return;
     }
 
-    const validatedData = createCVSchema.parse(req.body);
+    const titleSource =
+      req.body.title || req.body.name || path.parse(req.file.originalname).name;
+    const validatedData = createCVSchema.parse({
+      title: String(titleSource).trim(),
+      isDefault: req.body.isDefault === "true" || req.body.isDefault === true,
+    });
     const cv = await cvService.createCV(req.user.id, validatedData, {
       filename: req.file.filename,
       path: req.file.path,
@@ -25,21 +33,21 @@ export const uploadCV = async (req: Request, res: Response): Promise<void> => {
 
     res.status(201).json({
       success: true,
-      message: 'Tải lên CV thành công',
+      message: "Tải lên CV thành công",
       data: cv,
     });
   } catch (error) {
     if (error instanceof ZodError) {
       res.status(400).json({
         success: false,
-        message: 'Dữ liệu không hợp lệ',
+        message: "Dữ liệu không hợp lệ",
         errors: error.errors,
       });
       return;
     }
     res.status(400).json({
       success: false,
-      message: error instanceof Error ? error.message : 'Tải lên thất bại',
+      message: error instanceof Error ? error.message : "Tải lên thất bại",
     });
   }
 };
@@ -48,7 +56,7 @@ export const uploadCV = async (req: Request, res: Response): Promise<void> => {
 export const getMyCVs = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      res.status(401).json({ success: false, message: 'Chưa đăng nhập' });
+      res.status(401).json({ success: false, message: "Chưa đăng nhập" });
       return;
     }
 
@@ -61,7 +69,8 @@ export const getMyCVs = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: error instanceof Error ? error.message : 'Lấy danh sách CV thất bại',
+      message:
+        error instanceof Error ? error.message : "Lấy danh sách CV thất bại",
     });
   }
 };
@@ -70,7 +79,7 @@ export const getMyCVs = async (req: Request, res: Response): Promise<void> => {
 export const getCVById = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      res.status(401).json({ success: false, message: 'Chưa đăng nhập' });
+      res.status(401).json({ success: false, message: "Chưa đăng nhập" });
       return;
     }
 
@@ -84,7 +93,7 @@ export const getCVById = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: error instanceof Error ? error.message : 'Lấy CV thất bại',
+      message: error instanceof Error ? error.message : "Lấy CV thất bại",
     });
   }
 };
@@ -93,7 +102,7 @@ export const getCVById = async (req: Request, res: Response): Promise<void> => {
 export const updateCV = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      res.status(401).json({ success: false, message: 'Chưa đăng nhập' });
+      res.status(401).json({ success: false, message: "Chưa đăng nhập" });
       return;
     }
 
@@ -103,21 +112,21 @@ export const updateCV = async (req: Request, res: Response): Promise<void> => {
 
     res.status(200).json({
       success: true,
-      message: 'Cập nhật CV thành công',
+      message: "Cập nhật CV thành công",
       data: cv,
     });
   } catch (error) {
     if (error instanceof ZodError) {
       res.status(400).json({
         success: false,
-        message: 'Dữ liệu không hợp lệ',
+        message: "Dữ liệu không hợp lệ",
         errors: error.errors,
       });
       return;
     }
     res.status(400).json({
       success: false,
-      message: error instanceof Error ? error.message : 'Cập nhật thất bại',
+      message: error instanceof Error ? error.message : "Cập nhật thất bại",
     });
   }
 };
@@ -126,7 +135,7 @@ export const updateCV = async (req: Request, res: Response): Promise<void> => {
 export const deleteCV = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      res.status(401).json({ success: false, message: 'Chưa đăng nhập' });
+      res.status(401).json({ success: false, message: "Chưa đăng nhập" });
       return;
     }
 
@@ -140,16 +149,19 @@ export const deleteCV = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: error instanceof Error ? error.message : 'Xóa CV thất bại',
+      message: error instanceof Error ? error.message : "Xóa CV thất bại",
     });
   }
 };
 
 // Set default CV
-export const setDefaultCV = async (req: Request, res: Response): Promise<void> => {
+export const setDefaultCV = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     if (!req.user) {
-      res.status(401).json({ success: false, message: 'Chưa đăng nhập' });
+      res.status(401).json({ success: false, message: "Chưa đăng nhập" });
       return;
     }
 
@@ -158,13 +170,13 @@ export const setDefaultCV = async (req: Request, res: Response): Promise<void> =
 
     res.status(200).json({
       success: true,
-      message: 'Đặt CV mặc định thành công',
+      message: "Đặt CV mặc định thành công",
       data: cv,
     });
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: error instanceof Error ? error.message : 'Cập nhật thất bại',
+      message: error instanceof Error ? error.message : "Cập nhật thất bại",
     });
   }
 };

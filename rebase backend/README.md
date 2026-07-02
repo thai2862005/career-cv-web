@@ -1,165 +1,144 @@
-# Career CV - Backend API
+# Career CV Backend API
 
-Hệ thống tuyển dụng việc làm với 3 loại người dùng: Người tìm việc, Nhà tuyển dụng (HR), và Admin.
+Backend của hệ thống tuyển dụng Career CV. Dự án hỗ trợ 3 nhóm người dùng chính: Job Seeker, HR và Admin.
+
+## Tổng quan
+
+API được xây bằng Express + TypeScript, dùng Prisma kết nối MySQL, xác thực bằng JWT và hỗ trợ upload CV, avatar, logo. File upload được phục vụ trực tiếp qua thư mục `/uploads`.
+
+## Yêu cầu môi trường
+
+- Node.js 18+.
+- MySQL.
+- Tài khoản SMTP nếu muốn gửi email.
 
 ## Cài đặt
 
 ```bash
-# Cài đặt dependencies
 npm install
 
-# Copy file .env
-cp .env.example .env
-# Cấu hình DATABASE_URL và các biến môi trường khác
+copy .env.example .env
+# Chỉnh DATABASE_URL, JWT và SMTP theo môi trường của bạn
 
-# Chạy migration
+npm run db:generate
 npm run db:migrate
-
-# Seed dữ liệu mẫu (roles, categories, admin user)
 npm run db:seed
-
-# Chạy server development
 npm run dev
 ```
 
-## Tài khoản mặc định
+## Biến môi trường
 
-- **Admin**: admin@career-cv.com / admin123
+Tạo file `.env` từ `.env.example` rồi cập nhật các giá trị sau:
 
-## API Endpoints
+| Biến                     | Mô tả                             |
+| ------------------------ | --------------------------------- |
+| `DATABASE_URL`           | Chuỗi kết nối MySQL cho Prisma    |
+| `JWT_SECRET`             | Secret ký access token            |
+| `JWT_EXPIRES_IN`         | Thời gian hết hạn access token    |
+| `JWT_REFRESH_EXPIRES_IN` | Thời gian hết hạn refresh token   |
+| `PORT`                   | Cổng chạy server, mặc định `5000` |
+| `NODE_ENV`               | `development` hoặc `production`   |
+| `SMTP_HOST`              | SMTP server                       |
+| `SMTP_PORT`              | Cổng SMTP                         |
+| `SMTP_SECURE`            | `true` hoặc `false`               |
+| `SMTP_USER`              | Email gửi đi                      |
+| `SMTP_PASS`              | Mật khẩu ứng dụng / app password  |
+| `SMTP_FROM`              | Địa chỉ người gửi mặc định        |
 
-### Authentication (`/api/v1/auth`)
+## Scripts
 
-| Method | Endpoint | Mô tả | Auth |
-|--------|----------|-------|------|
-| POST | `/auth/register` | Đăng ký tài khoản | - |
-| POST | `/auth/login` | Đăng nhập | - |
-| GET | `/auth/profile` | Lấy thông tin cá nhân | ✓ |
-| PUT | `/auth/profile` | Cập nhật thông tin | ✓ |
-| PUT | `/auth/change-password` | Đổi mật khẩu | ✓ |
+```bash
+npm run dev          # Chạy backend ở chế độ development
+npm run build        # Compile TypeScript
+npm run db:migrate   # Tạo và áp migration Prisma
+npm run db:push      # Đẩy schema trực tiếp lên DB
+npm run db:seed      # Seed dữ liệu mẫu
+npm run db:studio    # Mở Prisma Studio
+npm run db:generate  # Sinh Prisma Client
+```
 
-### CV (`/api/v1/cv`) - Job Seeker
+## Tài khoản mẫu
 
-| Method | Endpoint | Mô tả | Auth |
-|--------|----------|-------|------|
-| POST | `/cv` | Upload CV (multipart/form-data) | ✓ |
-| GET | `/cv` | Lấy danh sách CV của tôi | ✓ |
-| GET | `/cv/:id` | Lấy chi tiết CV | ✓ |
-| PUT | `/cv/:id` | Cập nhật CV | ✓ |
-| DELETE | `/cv/:id` | Xóa CV | ✓ |
-| PUT | `/cv/:id/default` | Đặt CV mặc định | ✓ |
+Sau khi seed, hệ thống tạo sẵn:
 
-### Company (`/api/v1/companies`)
+- Admin: `admin@career-cv.com` / `admin123`
+- Một số tài khoản HR mẫu trong file seed, cùng mật khẩu `admin123`
 
-| Method | Endpoint | Mô tả | Auth |
-|--------|----------|-------|------|
-| GET | `/companies` | Danh sách công ty | - |
-| GET | `/companies/:id` | Chi tiết công ty | - |
-| GET | `/companies/:id/reviews` | Đánh giá công ty | - |
-| POST | `/companies` | Tạo công ty (HR) | ✓ HR |
-| PUT | `/companies/:id` | Cập nhật công ty | ✓ HR |
-| GET | `/hr/company` | Lấy công ty của tôi (HR) | ✓ HR |
-| POST | `/companies/reviews` | Đánh giá công ty | ✓ Job Seeker |
+## API chính
 
-### Jobs (`/api/v1/jobs`)
+Base path: `/api/v1`
 
-| Method | Endpoint | Mô tả | Auth |
-|--------|----------|-------|------|
-| GET | `/jobs` | Tìm kiếm việc làm | - |
-| GET | `/jobs/:id` | Chi tiết tin tuyển dụng | - |
-| POST | `/jobs/:id/save` | Lưu tin tuyển dụng | ✓ Job Seeker |
-| DELETE | `/jobs/:id/save` | Bỏ lưu tin | ✓ Job Seeker |
-| GET | `/saved-jobs` | Danh sách tin đã lưu | ✓ Job Seeker |
+### Auth
 
-### HR Jobs (`/api/v1/hr/jobs`)
+- `POST /auth/register`
+- `POST /auth/login`
+- `GET /auth/profile`
+- `PUT /auth/profile`
+- `PUT /auth/change-password`
 
-| Method | Endpoint | Mô tả | Auth |
-|--------|----------|-------|------|
-| POST | `/hr/jobs` | Đăng tin tuyển dụng | ✓ HR |
-| GET | `/hr/jobs` | Danh sách tin của tôi | ✓ HR |
-| PUT | `/hr/jobs/:id` | Cập nhật tin | ✓ HR |
-| DELETE | `/hr/jobs/:id` | Xóa tin | ✓ HR |
-| PUT | `/hr/jobs/:id/toggle` | Bật/tắt tin | ✓ HR |
+### CV
 
-### Applications (`/api/v1/applications`)
+- `POST /cv` để upload CV, field file là `file`
+- `GET /cv`
+- `GET /cv/:id`
+- `PUT /cv/:id`
+- `DELETE /cv/:id`
+- `PUT /cv/:id/default`
 
-| Method | Endpoint | Mô tả | Auth |
-|--------|----------|-------|------|
-| POST | `/applications` | Ứng tuyển công việc | ✓ Job Seeker |
-| GET | `/applications` | Danh sách đơn ứng tuyển | ✓ Job Seeker |
-| GET | `/applications/:id` | Chi tiết đơn | ✓ |
-| DELETE | `/applications/:id` | Hủy đơn ứng tuyển | ✓ Job Seeker |
+### Companies
 
-### HR Applications (`/api/v1/hr`)
+- `GET /companies`
+- `GET /companies/:id`
+- `GET /companies/:id/reviews`
+- `POST /companies` cho HR
+- `PUT /companies/:id` cho HR
+- `GET /hr/company`
+- `POST /companies/reviews`
 
-| Method | Endpoint | Mô tả | Auth |
-|--------|----------|-------|------|
-| GET | `/hr/applications` | Tất cả đơn ứng tuyển | ✓ HR |
-| GET | `/hr/applications/stats` | Thống kê đơn | ✓ HR |
-| GET | `/hr/jobs/:jobId/applications` | Đơn theo tin tuyển dụng | ✓ HR |
-| PUT | `/hr/applications/:id/status` | Cập nhật trạng thái | ✓ HR |
-| GET | `/hr/candidates` | Tìm kiếm ứng viên | ✓ HR |
+### Jobs
 
-### Notifications (`/api/v1/notifications`)
+- `GET /jobs`
+- `GET /jobs/:id`
+- `POST /jobs/:id/save`
+- `DELETE /jobs/:id/save`
+- `GET /saved-jobs`
+- `POST /hr/jobs`
+- `GET /hr/jobs`
+- `PUT /hr/jobs/:id`
+- `DELETE /hr/jobs/:id`
+- `PUT /hr/jobs/:id/toggle`
 
-| Method | Endpoint | Mô tả | Auth |
-|--------|----------|-------|------|
-| GET | `/notifications` | Danh sách thông báo | ✓ |
-| PUT | `/notifications/:id/read` | Đánh dấu đã đọc | ✓ |
-| PUT | `/notifications/read-all` | Đánh dấu tất cả đã đọc | ✓ |
-| DELETE | `/notifications/:id` | Xóa thông báo | ✓ |
+### Applications
 
-### Categories (`/api/v1/categories`)
+- `POST /applications`
+- `GET /applications`
+- `GET /applications/:id`
+- `DELETE /applications/:id`
+- `GET /hr/applications`
+- `GET /hr/applications/stats`
+- `GET /hr/jobs/:jobId/applications`
+- `PUT /hr/applications/:id/status`
+- `GET /hr/candidates`
 
-| Method | Endpoint | Mô tả | Auth |
-|--------|----------|-------|------|
-| GET | `/categories` | Danh sách danh mục | - |
-| GET | `/categories/:id` | Chi tiết danh mục | - |
+### Notifications, messages, email, categories, admin
 
-### Admin (`/api/v1/admin`) - Admin Only
+- `GET /notifications`
+- `PUT /notifications/:id/read`
+- `PUT /notifications/read-all`
+- `DELETE /notifications/:id`
+- `GET /messages`, `POST /messages`
+- `POST /contact`
+- `GET /email/history`
+- `GET /categories`, `GET /categories/:id`
+- Các route `admin/*` cho dashboard, users, companies, jobs, categories, reports và contacts
 
-| Method | Endpoint | Mô tả |
-|--------|----------|-------|
-| GET | `/admin/dashboard` | Thống kê tổng quan |
-| GET | `/admin/users` | Danh sách người dùng |
-| GET | `/admin/users/:id` | Chi tiết người dùng |
-| PUT | `/admin/users/:id` | Cập nhật người dùng |
-| PUT | `/admin/users/:id/toggle` | Khóa/mở khóa tài khoản |
-| DELETE | `/admin/users/:id` | Xóa người dùng |
-| PUT | `/admin/users/:id/reset-password` | Reset mật khẩu |
-| GET | `/admin/roles` | Danh sách roles |
-| GET | `/admin/reports` | Báo cáo hệ thống |
-| GET | `/admin/companies` | Quản lý công ty |
-| PUT | `/admin/companies/:id/verify` | Xác minh công ty |
-| GET | `/admin/jobs/pending` | Tin chờ duyệt |
-| PUT | `/admin/jobs/:id/approve` | Duyệt/từ chối tin |
-| POST | `/admin/categories` | Tạo danh mục |
-| PUT | `/admin/categories/:id` | Cập nhật danh mục |
-| DELETE | `/admin/categories/:id` | Xóa danh mục |
-| GET | `/admin/contacts` | Danh sách liên hệ |
-| PUT | `/admin/contacts/:id/resolve` | Đánh dấu đã xử lý |
-
-### Contact (`/api/v1/contact`)
-
-| Method | Endpoint | Mô tả | Auth |
-|--------|----------|-------|------|
-| POST | `/contact` | Gửi liên hệ | - |
-
-## Roles & Permissions
-
-| Role | ID | Mô tả |
-|------|-----|-------|
-| job_seeker | 1 | Người tìm việc |
-| hr | 2 | Nhà tuyển dụng |
-| admin | 3 | Quản trị viên |
-
-## Response Format
+## Response format
 
 ```json
 {
   "success": true,
   "message": "Thông báo",
-  "data": { ... },
+  "data": {},
   "meta": {
     "page": 1,
     "limit": 10,
@@ -169,41 +148,42 @@ npm run dev
 }
 ```
 
-## Authentication
+## Xác thực
 
-Sử dụng JWT Bearer Token trong header:
+Gửi JWT trong header:
 
-```
+```http
 Authorization: Bearer <token>
 ```
 
-## Scripts
+## Upload file
 
-```bash
-npm run dev          # Chạy development server
-npm run build        # Build TypeScript
-npm run db:migrate   # Chạy Prisma migration
-npm run db:push      # Push schema to DB
-npm run db:seed      # Seed dữ liệu mẫu
-npm run db:studio    # Mở Prisma Studio
-npm run db:generate  # Generate Prisma client
-```
+- CV: lưu tại `uploads/cv`
+- Avatar: lưu tại `uploads/avatar`
+- Logo công ty: lưu tại `uploads/logo`
+
+Các file upload có thể truy cập qua URL công khai bắt đầu bằng `/uploads`.
 
 ## Cấu trúc thư mục
 
-```
+```text
 src/
-├── app.ts              # Entry point
-├── config/             # Cấu hình (auth, multer, prisma client)
-├── controller/         # Controllers
-├── middleware/         # Middleware (auth)
-├── routers/           # Routes
-├── service/           # Business logic
-├── type/              # TypeScript types
-└── validation/        # Zod schemas
+├── app.ts
+├── config/
+├── controller/
+├── middleware/
+├── routers/
+├── service/
+├── type/
+└── validation/
 
 prisma/
-├── schema.prisma      # Database schema
-├── seed.ts            # Seed script
-└── migrations/        # Migration files
+├── schema.prisma
+├── seed.ts
+└── migrations/
 ```
+
+## Kiểm tra nhanh
+
+- `GET /health` để kiểm tra server có chạy hay không.
+- Khi chạy local, server mặc định ở `http://localhost:5000`.

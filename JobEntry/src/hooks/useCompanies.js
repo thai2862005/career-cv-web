@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { companyAPI } from '../services/api';
+import { useState, useEffect } from "react";
+import { companyAPI } from "../services/api";
 
 /**
  * Hook to fetch all companies
@@ -20,7 +20,11 @@ export const useCompanies = () => {
     setLoading(false);
 
     if (response.success) {
-      setCompanies(response.data || []);
+      const data = response.data;
+      const companiesArray = Array.isArray(data)
+        ? data
+        : data?.data || data?.companies || [];
+      setCompanies(companiesArray);
     } else {
       setError(response.error);
     }

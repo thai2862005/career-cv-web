@@ -20,6 +20,7 @@ export const searchJobSchema = z.object({
   keyword: z.string().optional(),
   location: z.string().optional(),
   categoryId: z.number().optional(),
+  companyId: z.number().optional(),
   jobType: z.enum(['FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP', 'REMOTE']).optional(),
   salaryMin: z.number().optional(),
   salaryMax: z.number().optional(),

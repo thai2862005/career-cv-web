@@ -33,7 +33,9 @@ export const Home = () => {
 
   // Get featured jobs (first 4) and top companies (first 6)
   const featuredJobs = Array.isArray(jobs) ? jobs.slice(0, 4) : [];
-  const topCompanies = Array.isArray(companies) ? companies.slice(0, 6).map(c => c.name) : [];
+  const topCompanies = Array.isArray(companies) && companies.length > 0 
+    ? companies.slice(0, 6).map(c => c.name || c.CompanyName || 'Company') 
+    : ['Google', 'Microsoft', 'Apple', 'Amazon', 'Meta', 'Netflix'];
 
   // Use user from context or fallback to localStorage
   const displayUser = user || storedUserInfo;

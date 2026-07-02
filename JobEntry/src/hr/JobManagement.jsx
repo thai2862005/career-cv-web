@@ -32,6 +32,7 @@ export const HRJobManagement = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -72,6 +73,7 @@ export const HRJobManagement = () => {
 
   const resetForm = () => {
     setEditingJob(null);
+    setFieldErrors({});
     setFormData({
       title: "",
       description: "",
@@ -119,6 +121,7 @@ export const HRJobManagement = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setFieldErrors({});
 
     const payload = {
       title: formData.title,
@@ -145,6 +148,24 @@ export const HRJobManagement = () => {
       setTimeout(() => setSuccessMessage(""), 3000);
     } else {
       setError(response.error || "Failed to save job");
+      if (
+        response.fieldErrors &&
+        Object.keys(response.fieldErrors).length > 0
+      ) {
+        setFieldErrors(response.fieldErrors);
+      } else if (response.errors && response.errors.length > 0) {
+        const errorsMap = {};
+        response.errors.forEach((err) => {
+          if (
+            err.path &&
+            err.path.length > 0 &&
+            typeof err.path[0] === "string"
+          ) {
+            errorsMap[err.path[0]] = err.message;
+          }
+        });
+        setFieldErrors(errorsMap);
+      }
     }
 
     setLoading(false);
@@ -346,58 +367,96 @@ export const HRJobManagement = () => {
           </>
         }
       >
-        <form onSubmit={saveJob} className="space-y-4">
-          <Input
-            label="Job Title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-          />
+        <form onSubmit={saveJob} className="space-y-4" noValidate>
+          <div>
+            <Input
+              label="Job Title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+            />
+            {fieldErrors.title && (
+              <p className="text-red-500 text-xs mt-1">{fieldErrors.title}</p>
+            )}
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="Location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              label="Experience"
-              name="experience"
-              value={formData.experience}
-              onChange={handleChange}
-              placeholder="2+ years"
-            />
+            <div>
+              <Input
+                label="Location"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+              />
+              {fieldErrors.location && (
+                <p className="text-red-500 text-xs mt-1">
+                  {fieldErrors.location}
+                </p>
+              )}
+            </div>
+            <div>
+              <Input
+                label="Experience"
+                name="experience"
+                value={formData.experience}
+                onChange={handleChange}
+                placeholder="2+ years"
+              />
+              {fieldErrors.experience && (
+                <p className="text-red-500 text-xs mt-1">
+                  {fieldErrors.experience}
+                </p>
+              )}
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Select
-              label="Job Type"
-              name="jobType"
-              value={formData.jobType}
-              onChange={handleChange}
-              options={[
-                { value: "FULL_TIME", label: "Full-time" },
-                { value: "PART_TIME", label: "Part-time" },
-                { value: "CONTRACT", label: "Contract" },
-                { value: "INTERNSHIP", label: "Internship" },
-                { value: "REMOTE", label: "Remote" },
-              ]}
-            />
-            <Input
-              label="Salary Min (USD)"
-              name="salary"
-              value={formData.salary}
-              onChange={handleChange}
-              type="number"
-            />
-            <Input
-              label="Salary Max (USD)"
-              name="salaryMax"
-              value={formData.salaryMax}
-              onChange={handleChange}
-              type="number"
-            />
+            <div>
+              <Select
+                label="Job Type"
+                name="jobType"
+                value={formData.jobType}
+                onChange={handleChange}
+                options={[
+                  { value: "FULL_TIME", label: "Full-time" },
+                  { value: "PART_TIME", label: "Part-time" },
+                  { value: "CONTRACT", label: "Contract" },
+                  { value: "INTERNSHIP", label: "Internship" },
+                  { value: "REMOTE", label: "Remote" },
+                ]}
+              />
+              {fieldErrors.jobType && (
+                <p className="text-red-500 text-xs mt-1">
+                  {fieldErrors.jobType}
+                </p>
+              )}
+            </div>
+            <div>
+              <Input
+                label="Salary Min (USD)"
+                name="salary"
+                value={formData.salary}
+                onChange={handleChange}
+                type="number"
+              />
+              {fieldErrors.salary && (
+                <p className="text-red-500 text-xs mt-1">
+                  {fieldErrors.salary}
+                </p>
+              )}
+            </div>
+            <div>
+              <Input
+                label="Salary Max (USD)"
+                name="salaryMax"
+                value={formData.salaryMax}
+                onChange={handleChange}
+                type="number"
+              />
+              {fieldErrors.salaryMax && (
+                <p className="text-red-500 text-xs mt-1">
+                  {fieldErrors.salaryMax}
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="flex flex-col space-y-1">
@@ -408,9 +467,13 @@ export const HRJobManagement = () => {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] min-h-28"
-              required
+              className={`px-4 py-2 border ${fieldErrors.description ? "border-red-500" : "border-slate-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] min-h-28`}
             />
+            {fieldErrors.description && (
+              <p className="text-red-500 text-xs mt-1">
+                {fieldErrors.description}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col space-y-1">
@@ -421,8 +484,13 @@ export const HRJobManagement = () => {
               name="requirements"
               value={formData.requirements}
               onChange={handleChange}
-              className="px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] min-h-24"
+              className={`px-4 py-2 border ${fieldErrors.requirements ? "border-red-500" : "border-slate-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] min-h-24`}
             />
+            {fieldErrors.requirements && (
+              <p className="text-red-500 text-xs mt-1">
+                {fieldErrors.requirements}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col space-y-1">
@@ -433,8 +501,13 @@ export const HRJobManagement = () => {
               name="benefits"
               value={formData.benefits}
               onChange={handleChange}
-              className="px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] min-h-24"
+              className={`px-4 py-2 border ${fieldErrors.benefits ? "border-red-500" : "border-slate-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] min-h-24`}
             />
+            {fieldErrors.benefits && (
+              <p className="text-red-500 text-xs mt-1">
+                {fieldErrors.benefits}
+              </p>
+            )}
           </div>
         </form>
       </Modal>

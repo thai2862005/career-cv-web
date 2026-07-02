@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card } from "../components/Card";
 import { Button } from "../components/Button";
 import { EmptyState } from "../components/States";
+import { CVViewerModal } from "../components/CVViewerModal";
 import { Search, Mail, FileText, Loader } from "lucide-react";
 import { applicationAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
@@ -13,6 +14,9 @@ export const HRCandidateSearch = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [candidates, setCandidates] = useState([]);
   const [error, setError] = useState("");
+  const [isCVModalOpen, setIsCVModalOpen] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [selectedCV, setSelectedCV] = useState(null);
 
   const fetchCandidates = async (searchKeyword = "") => {
     setIsSearching(true);
@@ -48,6 +52,15 @@ export const HRCandidateSearch = () => {
 
   const onSearch = () => {
     fetchCandidates(keyword.trim());
+  };
+
+  const handleViewCV = (candidate) => {
+    const cv = candidate.cvs?.[0];
+    if (cv) {
+      setSelectedCandidate(candidate);
+      setSelectedCV(cv);
+      setIsCVModalOpen(true);
+    }
   };
 
   return (
@@ -152,12 +165,7 @@ export const HRCandidateSearch = () => {
                       variant="secondary"
                       size="sm"
                       className="flex items-center"
-                      onClick={() => {
-                        const cv = candidate.cvs?.[0];
-                        if (cv?.fileUrl) {
-                          window.open(cv.fileUrl, "_blank");
-                        }
-                      }}
+                      onClick={() => handleViewCV(candidate)}
                     >
                       <FileText className="h-3.5 w-3.5 mr-1" /> View CV
                     </Button>
@@ -185,6 +193,18 @@ export const HRCandidateSearch = () => {
           </div>
         </div>
       )}
+
+      {/* CV Viewer Modal */}
+      <CVViewerModal
+        isOpen={isCVModalOpen}
+        onClose={() => {
+          setIsCVModalOpen(false);
+          setSelectedCandidate(null);
+          setSelectedCV(null);
+        }}
+        candidate={selectedCandidate}
+        cvData={selectedCV}
+      />
     </div>
   );
 };

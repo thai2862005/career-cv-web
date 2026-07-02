@@ -440,6 +440,125 @@ async function main() {
       isActive: false,
       isApproved: true,
     },
+    {
+      companyId: companies[0].id,
+      title: "QA Automation Engineer",
+      description:
+        "Build and maintain automated test suites for web applications, improve release confidence, and collaborate closely with developers to catch regressions early.",
+      requirements:
+        "2+ years QA, Cypress or Playwright, API testing, strong attention to detail.",
+      benefits: "Hybrid work, health insurance, training budget.",
+      location: "Remote",
+      salary: 1300,
+      salaryMax: 1900,
+      jobType: "FULL_TIME" as const,
+      experience: "2+ years",
+      categoryId: categoryIdByName["Công nghệ thông tin"],
+      isActive: true,
+      isApproved: true,
+    },
+    {
+      companyId: companies[1].id,
+      title: "Senior Product Manager",
+      description:
+        "Own product strategy from discovery to delivery, prioritize roadmaps, and work with engineering, design, and business teams to ship measurable user value.",
+      requirements:
+        "4+ years product management, strong analytics, roadmap ownership, stakeholder communication.",
+      benefits: "Performance bonus, annual learning fund, flexible schedule.",
+      location: "Ho Chi Minh City",
+      salary: 2200,
+      salaryMax: 3200,
+      jobType: "FULL_TIME" as const,
+      experience: "4+ years",
+      categoryId: categoryIdByName["Kinh doanh"],
+      isActive: true,
+      isApproved: true,
+    },
+    {
+      companyId: companies[2].id,
+      title: "Business Analyst",
+      description:
+        "Translate business requirements into clear technical tickets, support process improvements, and work with delivery teams to ensure project success.",
+      requirements:
+        "2+ years BA or PM, requirement gathering, documentation, SQL basics.",
+      benefits: "Project bonus, onsite allowance, strong team culture.",
+      location: "Ha Noi",
+      salary: 1400,
+      salaryMax: 2100,
+      jobType: "FULL_TIME" as const,
+      experience: "2+ years",
+      categoryId: categoryIdByName["Kinh doanh"],
+      isActive: true,
+      isApproved: true,
+    },
+    {
+      companyId: companies[3].id,
+      title: "Performance Marketing Specialist",
+      description:
+        "Run paid acquisition campaigns, analyze funnel metrics, and optimize conversion performance across digital channels for a fast-growing fintech product.",
+      requirements:
+        "2+ years performance marketing, Meta/Google Ads, analytics, A/B testing.",
+      benefits: "Bonus on KPI, product allowance, modern office.",
+      location: "Ho Chi Minh City",
+      salary: 1400,
+      salaryMax: 2200,
+      jobType: "FULL_TIME" as const,
+      experience: "2+ years",
+      categoryId: categoryIdByName["Marketing"],
+      isActive: true,
+      isApproved: true,
+    },
+    {
+      companyId: companies[4].id,
+      title: "Data Scientist",
+      description:
+        "Develop predictive models, explore product data, and collaborate with engineering teams to bring machine learning features into production.",
+      requirements:
+        "Python, statistics, ML frameworks, data visualization, experimentation mindset.",
+      benefits: "Stock options, research time, premium health package.",
+      location: "Ha Noi",
+      salary: 2300,
+      salaryMax: 3400,
+      jobType: "FULL_TIME" as const,
+      experience: "3+ years",
+      categoryId: categoryIdByName["Công nghệ thông tin"],
+      isActive: true,
+      isApproved: true,
+    },
+    {
+      companyId: companies[5].id,
+      title: "Mobile App Developer",
+      description:
+        "Build and maintain customer-facing mobile experiences, collaborate on architecture decisions, and ship polished features for Android and iOS users.",
+      requirements:
+        "Flutter or React Native, mobile release process, API integration, UI polish.",
+      benefits: "E-commerce discount, team activities, flexible hours.",
+      location: "Ho Chi Minh City",
+      salary: 1600,
+      salaryMax: 2400,
+      jobType: "FULL_TIME" as const,
+      experience: "2+ years",
+      categoryId: categoryIdByName["Công nghệ thông tin"],
+      isActive: true,
+      isApproved: true,
+    },
+    {
+      companyId: companies[5].id,
+      title: "HRBP Specialist",
+      description:
+        "Support hiring operations, employee experience, and people programs while partnering with managers to improve organizational health and retention.",
+      requirements:
+        "3+ years HRBP or recruitment operations, stakeholder management, reporting.",
+      benefits: "Year-end bonus, healthcare, career development support.",
+      location: "Ho Chi Minh City",
+      salary: 1200,
+      salaryMax: 1900,
+      jobType: "FULL_TIME" as const,
+      experience: "3+ years",
+      categoryId: categoryIdByName["Nhân sự"],
+      isActive: true,
+      isApproved: true,
+    },
   ];
 
   const seededJobs = [] as Array<{

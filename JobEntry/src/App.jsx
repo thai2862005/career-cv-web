@@ -16,6 +16,9 @@ import { CompanyList } from "./candidate/CompanyList";
 import { Auth } from "./candidate/Auth";
 import { CandidateDashboard } from "./candidate/Dashboard";
 import { CandidateCVManagement } from "./candidate/CVManagement";
+import { CandidateJobSearch } from "./candidate/JobSearch";
+import { CandidateApplications } from "./candidate/Applications";
+import { CandidateSavedJobs } from "./candidate/SavedJobs";
 
 // HR Pages
 import { HRDashboard } from "./hr/Dashboard";
@@ -55,7 +58,10 @@ function App() {
               element={<Navigate to="/candidate/dashboard" replace />}
             />
             <Route path="dashboard" element={<CandidateDashboard />} />
+            <Route path="jobs" element={<CandidateJobSearch />} />
+            <Route path="applications" element={<CandidateApplications />} />
             <Route path="cv" element={<CandidateCVManagement />} />
+            <Route path="saved-jobs" element={<CandidateSavedJobs />} />
             <Route
               path="*"
               element={

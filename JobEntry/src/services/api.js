@@ -25,7 +25,13 @@ const apiRequest = async (endpoint, options = {}) => {
   };
 
   if (body) {
-    config.body = JSON.stringify(body);
+    if (body instanceof FormData) {
+      config.body = body;
+      // Let browser set the correct Content-Type with boundary for FormData
+      delete config.headers["Content-Type"];
+    } else {
+      config.body = JSON.stringify(body);
+    }
   }
 
   try {
@@ -46,6 +52,8 @@ const apiRequest = async (endpoint, options = {}) => {
       success: false,
       error: error.message || "Network error",
       details: error,
+      errors: error.data?.errors || [],
+      fieldErrors: error.data?.fieldErrors || {},
     };
   }
 };
@@ -77,7 +85,20 @@ export const authAPI = {
 // JOB ENDPOINTS
 // ============================================
 export const jobAPI = {
-  getAllJobs: () => apiRequest("/jobs"),
+  getAllJobs: (filters = {}) => {
+    const params = new URLSearchParams();
+    for (const key in filters) {
+      if (
+        filters[key] !== undefined &&
+        filters[key] !== null &&
+        filters[key] !== ""
+      ) {
+        params.append(key, filters[key]);
+      }
+    }
+    const query = params.toString();
+    return apiRequest(`/jobs${query ? `?${query}` : ""}`);
+  },
 
   getJobById: (id) => apiRequest(`/jobs/${id}`),
 

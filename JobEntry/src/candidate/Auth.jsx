@@ -236,14 +236,28 @@ export const Auth = () => {
             </Button>
 
             {isLogin && (
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-700">
-                  <span className="font-semibold">Demo Account:</span>
-                  <br />
-                  Email: admin@career-cv.com
-                  <br />
-                  Password: password123
-                </p>
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-3">
+                <div>
+                  <p className="text-sm text-blue-700 font-semibold mb-2">
+                    Demo Accounts:
+                  </p>
+                  <div className="space-y-2">
+                    <div className="text-sm text-blue-700">
+                      <span className="font-medium">Admin:</span>
+                      <br />
+                      Email: admin@career-cv.com
+                      <br />
+                      Password: admin123
+                    </div>
+                    <div className="text-sm text-blue-700">
+                      <span className="font-medium">HR:</span>
+                      <br />
+                      Email: hr.fpt@career-cv.com
+                      <br />
+                      Password: admin123
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
